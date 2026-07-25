@@ -15,6 +15,10 @@ on:
         required: false
         default: 'true'
         type: boolean
+      packages:
+        description: 'JSON array of extra package names to include (e.g. ["nmap","wireshark"]). Leave empty for default package set.'
+        required: false
+        default: '[]'
 
 permissions:
   contents: write  # required to create releases & upload assets
@@ -75,6 +79,34 @@ jobs:
         run: |
           cd live-build
           sudo bash auto/config
+
+      # ── Write custom package list from web builder ───────────────────────────
+      - name: Write custom package list
+        run: |
+          PACKAGES='${{ github.event.inputs.packages }}'
+          if [[ -z "$PACKAGES" || "$PACKAGES" == "[]" ]]; then
+            echo "No custom packages requested — using default package lists."
+          else
+            echo "$PACKAGES" | python3 -c "
+import sys, json, os
+try:
+    pkgs = json.load(sys.stdin)
+except Exception as e:
+    print(f'Warning: could not parse packages JSON: {e}', file=sys.stderr)
+    sys.exit(0)
+if not pkgs:
+    print('Empty package list — skipping custom list.')
+    sys.exit(0)
+out_dir = 'live-build/config/package-lists'
+os.makedirs(out_dir, exist_ok=True)
+out_path = os.path.join(out_dir, 'custom-web.list.chroot')
+with open(out_path, 'w') as f:
+    f.write('# Custom packages requested via the DainRaku web ISO builder\n')
+    for p in sorted(set(pkgs)):
+        f.write(p + '\n')
+print(f'Wrote {len(pkgs)} custom packages to {out_path}')
+"
+          fi
 
       # ── Make hooks executable ────────────────────────────────────────────────
       - name: Set hook permissions
