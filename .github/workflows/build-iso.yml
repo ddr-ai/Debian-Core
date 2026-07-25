@@ -26,6 +26,12 @@ permissions:
 jobs:
   build:
     name: Build ISO
+    # GitHub-hosted runners have ~14 GB free; the ISO build needs ~30 GB.
+    # The cleanup steps below reclaim enough space on ubuntu-22.04, but if
+    # GitHub changes what's pre-installed you may hit out-of-space failures.
+    # To eliminate the risk entirely, switch to a self-hosted runner:
+    #   runs-on: [self-hosted, linux, x64]
+    # Self-hosted runners should have ≥ 60 GB free disk and sudo access.
     runs-on: ubuntu-22.04
     timeout-minutes: 120
 
@@ -41,9 +47,30 @@ jobs:
           sudo apt-get clean
           df -h
 
+      # ── Guard: verify enough disk space is available ─────────────────────────
+      - name: Verify available disk space (need ≥ 30 GB)
+        run: |
+          AVAIL_GB=$(df / --output=avail -BG | tail -1 | tr -d 'G ')
+          echo "Available disk space after cleanup: ${AVAIL_GB} GB"
+          if [[ "${AVAIL_GB}" -lt 30 ]]; then
+            echo "::error::Insufficient disk space: ${AVAIL_GB} GB available, at least 30 GB required." >&2
+            echo "" >&2
+            echo "Options to resolve:" >&2
+            echo "  1. Add more cleanup steps in the 'Free up disk space' step above." >&2
+            echo "  2. Switch to a self-hosted runner with ≥ 60 GB free disk" >&2
+            echo "     (change runs-on to: [self-hosted, linux, x64])." >&2
+            exit 1
+          fi
+          echo "Disk space check passed: ${AVAIL_GB} GB available."
+
       # ── Checkout ────────────────────────────────────────────────────────────
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      # ── Record build start time (used for elapsed time in job summary) ───────
+      - name: Record build start time
+        id: timer
+        run: echo "start=$(date +%s)" >> "$GITHUB_OUTPUT"
 
       # ── Install live-build and deps ─────────────────────────────────────────
       - name: Install build dependencies
@@ -148,6 +175,27 @@ print(f'Wrote {len(pkgs)} custom packages to {out_path}')
           echo "ISO: ${DEST}"
           echo "SHA256: ${SHA256}"
           echo "Size: ${SIZE}"
+
+      # ── Post job summary ────────────────────────────────────────────────────
+      - name: Post build summary
+        if: success()
+        run: |
+          END=$(date +%s)
+          START=${{ steps.timer.outputs.start }}
+          ELAPSED=$(( END - START ))
+          MINUTES=$(( ELAPSED / 60 ))
+          SECONDS=$(( ELAPSED % 60 ))
+          {
+            echo "## ✅ DainRaku OS Build Succeeded"
+            echo ""
+            echo "| Field | Value |"
+            echo "|-------|-------|"
+            echo "| **Version** | \`${{ steps.version.outputs.version }}\` |"
+            echo "| **ISO size** | ${{ steps.iso.outputs.size }} |"
+            echo "| **SHA256** | \`${{ steps.iso.outputs.sha256 }}\` |"
+            echo "| **Elapsed time** | ${MINUTES}m ${SECONDS}s |"
+            echo "| **Commit** | \`${{ github.sha }}\` |"
+          } >> "$GITHUB_STEP_SUMMARY"
 
       # ── Upload build log as artifact (always, even on failure) ──────────────
       - name: Upload build log
