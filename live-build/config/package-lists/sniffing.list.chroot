@@ -2,66 +2,66 @@
 # Sources: Debian stable + Kali Linux APT mirror overlay
 
 # ── Packet Capture & Analysis ─────────────────────────────────────────────────
-wireshark            # [apt] Debian: network protocol analyzer
-tshark               # [apt] Debian: terminal Wireshark
-tcpdump              # [apt] Debian: command-line packet capture
-ngrep                # [apt] Debian: network grep
-dsniff               # [apt] Debian: suite: arpspoof, urlsnarf, msgsnarf, mailsnarf, webspy, macof
+wireshark
+tshark
+tcpdump
+ngrep
+dsniff
 
 # ── MITM Frameworks ──────────────────────────────────────────────────────────
-ettercap-common      # [apt] Debian: MITM attack suite
-ettercap-graphical   # [apt] Debian: Ettercap GUI
-bettercap            # [apt] Kali: Swiss army knife for network attacks
-mitmproxy            # [apt] Debian: HTTP/S intercepting proxy
-sslstrip             # [apt] Kali: SSL stripping MITM tool
-sslsplit             # [apt] Debian: transparent SSL/TLS interception
+ettercap-common
+ettercap-graphical
+bettercap
+mitmproxy
+sslstrip
+sslsplit
 
 # ── LLMNR/mDNS/NBT Poisoning ─────────────────────────────────────────────────
-responder            # [apt] Kali: LLMNR/NBT-NS/mDNS poisoner
-mitm6                # [apt] Kali: IPv6 DNS takeover
+responder
+mitm6
 # inveigh: .NET/PowerShell only — use Responder on Linux hosts
 
 # ── DNS Spoofing ──────────────────────────────────────────────────────────────
-dnschef              # [apt] Kali: DNS proxy for MitM attacks
-dnsspoof             # [apt] Debian: DNS spoofing tool (part of dsniff)
+dnschef
+dnsspoof
 # fakedns: pip3 install fakedns — not in apt
 
 # ── ARP Spoofing ──────────────────────────────────────────────────────────────
 # arpspoof, macof: commands provided by the dsniff package (listed above)
-arpwatch             # [apt] Debian: monitor ARP tables for anomalies
+arpwatch
 
 # ── Packet Crafting & Replay ─────────────────────────────────────────────────
-python3-scapy        # [apt] Debian: Python packet crafting library
-hping3               # [apt] Debian: TCP/IP packet crafter and analyzer
-nemesis              # [apt] Debian: network packet injection tool
-yersinia             # [apt] Debian: L2 protocol attack tool
-tcpreplay            # [apt] Debian: replay pcap files (also provides tcprewrite)
-netsed               # [apt] Debian: modify network streams on the fly
+python3-scapy
+hping3
+nemesis
+yersinia
+tcpreplay
+netsed
 # bittwiste: not in Debian/Kali apt; compile from https://bittwist.sourceforge.io/
 # packeth: not in Debian apt; use scapy or hping3 instead
 # t50: not in Debian apt; compile from https://github.com/fredericopissarra/t50
 
 # ── SSL/TLS Interception ──────────────────────────────────────────────────────
-sslsplit             # [apt] Debian: transparent SSL/TLS proxy
+sslsplit
 # intercepter-ng: Windows/Wine tool; no Linux apt package
 # hsts-preload: informational tool; no apt package
 
 # ── Tunneling Over Covert Channels ───────────────────────────────────────────
-iodine               # [apt] Debian: DNS tunnel
-ptunnel-ng           # [apt] Kali: ICMP tunnel
-dns2tcp              # [apt] Debian: TCP over DNS tunnel
+iodine
+ptunnel-ng
+dns2tcp
 # nstx: outdated; use iodine instead
 # icmptunnel: compile from https://github.com/jamesbarlow/icmptunnel
-httptunnel           # [apt] Debian: HTTP tunnel
+httptunnel
 
 # ── VPN & IKE ────────────────────────────────────────────────────────────────
-ike-scan             # [apt] Debian: IKE VPN scanner
-openvpn              # [apt] Debian: OpenVPN client/server
-wireguard-tools      # [apt] Debian: WireGuard tools
+ike-scan
+openvpn
+wireguard-tools
 
 # ── Traffic Analysis ─────────────────────────────────────────────────────────
-netsniff-ng          # [apt] Debian: high-performance packet capture suite
-tcpflow              # [apt] Debian: TCP session reconstruction
+netsniff-ng
+tcpflow
 # urlsnarf, msgsnarf, mailsnarf, webspy: commands provided by dsniff package (listed above)
 # tcpxtract: not in Debian/Kali apt; use tcpflow or tshark instead
 # driftnet: not in Debian apt; use wireshark or tshark for media stream analysis
