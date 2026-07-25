@@ -124,18 +124,19 @@ jobs:
           restore-keys: |
             lb-cache-${{ runner.os }}-
 
-      # ── Build the ISO inside a Debian Bookworm container ─────────────────────
+      # ── Build the ISO inside a Debian Trixie container ───────────────────────
       # The GitHub runner is Ubuntu, whose live-build fork is too old and rejects
       # modern Debian options (--image-name, --uefi-secure-boot, etc.). Running
-      # the build inside debian:bookworm guarantees a matching live-build that
-      # understands the config. --privileged is required so debootstrap can mount
+      # the build inside debian:trixie guarantees a matching live-build that
+      # understands the config and a host toolchain aligned with the trixie base
+      # we are bootstrapping. --privileged is required so debootstrap can mount
       # /proc, /sys and loopback devices inside the chroot.
-      - name: Run lb config + build (debian:bookworm container)
+      - name: Run lb config + build (debian:trixie container)
         run: |
           docker run --rm --privileged \
             -v "$GITHUB_WORKSPACE":/build \
             -w /build \
-            debian:bookworm \
+            debian:trixie \
             bash -c '
               set -eo pipefail
               export DEBIAN_FRONTEND=noninteractive

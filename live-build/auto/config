@@ -17,7 +17,7 @@ lb config noauto \
     --color \
     --compression xz \
     --debootstrap-options "--include=ca-certificates,curl,apt-transport-https,gnupg" \
-    --distribution bookworm \
+    --distribution trixie \
     --firmware-chroot true \
     --firmware-binary true \
     --image-name "dainraku-os" \

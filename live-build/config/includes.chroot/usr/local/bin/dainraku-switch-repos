@@ -15,11 +15,11 @@ fi
 show_current() {
     echo ""
     echo "Current active repositories:"
-    echo "  Stable (bookworm):  [ALWAYS ON]"
+    echo "  Stable (trixie):    [ALWAYS ON]"
     if grep -q "^deb.*testing" "$ROLLING_LIST" 2>/dev/null; then
-        echo "  Testing (trixie):   [ENABLED]"
+        echo "  Testing (forky):    [ENABLED]"
     else
-        echo "  Testing (trixie):   [disabled]"
+        echo "  Testing (forky):    [disabled]"
     fi
     if grep -q "^deb.*sid" "$ROLLING_LIST" 2>/dev/null; then
         echo "  Sid (unstable):     [ENABLED]"
@@ -77,7 +77,7 @@ while true; do
     echo "============================================"
     show_current
     echo "Options:"
-    echo "  1) Enable Debian Testing (trixie)"
+    echo "  1) Enable Debian Testing (forky)"
     echo "  2) Disable Debian Testing"
     echo "  3) Enable Debian Sid (unstable)"
     echo "  4) Disable Debian Sid"

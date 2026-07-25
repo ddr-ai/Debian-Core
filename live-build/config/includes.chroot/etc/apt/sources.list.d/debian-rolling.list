@@ -5,7 +5,7 @@
 # WARNING: Enabling testing or sid may cause system instability.
 # ============================================================
 
-# --- Debian Testing (Trixie) ---
+# --- Debian Testing (Forky) ---
 # Suitable for: newer packages with moderate stability risk
 # deb http://deb.debian.org/debian testing main contrib non-free non-free-firmware
 # deb-src http://deb.debian.org/debian testing main contrib non-free non-free-firmware

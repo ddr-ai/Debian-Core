@@ -1,10 +1,10 @@
 # DainRaku OS — pin the Kali rolling overlay LOW.
 #
 # Without this, apt sees Kali's rolling versions of core packages (e.g.
-# plasma-workspace 6.x) as newer than Debian bookworm's and tries to install
+# plasma-workspace 6.x) as newer than the Debian base's and tries to install
 # them, which breaks the base system with unsatisfiable dependency conflicts.
 #
-# Priority 100 keeps the base system 100% Debian bookworm: Kali is only used
+# Priority 100 keeps the base system 100% Debian stable: Kali is only used
 # to supply tools that Debian does not package at all, and is never chosen to
 # upgrade or replace a package that also exists in Debian.
 Package: *
