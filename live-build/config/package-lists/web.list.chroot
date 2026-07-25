@@ -1,0 +1,90 @@
+# DainRaku OS — Web Application Pentesting Package List
+# Sources: Debian stable + Kali Linux APT mirror overlay
+
+# ── Web Proxies & Interceptors ───────────────────────────────────────────────
+burpsuite
+zaproxy
+mitmproxy
+
+# ── Scanners ─────────────────────────────────────────────────────────────────
+nikto
+w3af
+skipfish
+
+# ── SQL Injection ─────────────────────────────────────────────────────────────
+sqlmap
+ghauri
+nosqlmap
+
+# ── XSS & Injection ──────────────────────────────────────────────────────────
+xsser
+dalfox
+crlfuzz
+
+# ── OS Command Injection ─────────────────────────────────────────────────────
+commix
+
+# ── CMS Scanners ─────────────────────────────────────────────────────────────
+wpscan
+joomscan
+cmseek
+droopescan
+magescan
+
+# ── Directory & Path Discovery ────────────────────────────────────────────────
+gobuster
+feroxbuster
+ffuf
+wfuzz
+dirsearch
+dirb
+dirbuster
+
+# ── Parameter Discovery ───────────────────────────────────────────────────────
+arjun
+paramspider
+gf
+
+# ── SSL/TLS Testing ───────────────────────────────────────────────────────────
+testssl.sh
+sslscan
+sslyze
+tlsfuzzer
+
+# ── JWT & Auth ────────────────────────────────────────────────────────────────
+jwt-tool
+
+# ── CORS & Headers ────────────────────────────────────────────────────────────
+corsy
+bypass-403
+
+# ── SSRF ─────────────────────────────────────────────────────────────────────
+ssrfmap
+
+# ── GraphQL ──────────────────────────────────────────────────────────────────
+graphqlmap
+graphql-cop
+
+# ── Secret Detection in Code ─────────────────────────────────────────────────
+gitleaks
+trufflehog
+detect-secrets
+gitjacker
+
+# ── Web Shells & Post-Exploitation ───────────────────────────────────────────
+weevely
+laudanum
+webshells
+
+# ── HTTP Clients & Utilities ─────────────────────────────────────────────────
+httpie
+wuzz
+curl
+wget
+
+# ── Race Conditions ───────────────────────────────────────────────────────────
+race-the-web
+turbo-intruder
+
+# ── Proxy Utilities ──────────────────────────────────────────────────────────
+proxychains4

@@ -1,0 +1,35 @@
+#!/bin/bash
+# DainRaku OS Hook: Install Liquorix Kernel & set as GRUB default
+# Replaces the stock Debian kernel with the low-latency Liquorix kernel.
+set -euo pipefail
+
+echo "[DainRaku] Installing Liquorix Kernel..."
+
+# Add Liquorix APT key and repository
+curl -s 'https://liquorix.net/add-liquorix-repo.sh' | bash
+
+# Install Liquorix kernel
+apt-get install -y linux-image-liquorix-amd64 linux-headers-liquorix-amd64
+
+# Set Liquorix as the default GRUB entry
+LIQUORIX_VER=$(dpkg -l | grep linux-image-liquorix | awk '{print $2}' | head -1 | sed 's/linux-image-//')
+echo "[DainRaku] Found Liquorix version: ${LIQUORIX_VER}"
+
+# Configure GRUB to use the Liquorix kernel
+# NOTE: use unquoted heredoc so ${LIQUORIX_VER} expands correctly
+cat >> /etc/default/grub << EOF
+# DainRaku OS: Default to Liquorix kernel
+GRUB_DEFAULT="Advanced options for Debian GNU/Linux>Debian GNU/Linux, with Linux ${LIQUORIX_VER}"
+GRUB_TIMEOUT=3
+GRUB_DISTRIBUTOR="DainRaku OS"
+EOF
+
+# Remove the stock Debian kernel to reduce image size and avoid confusion
+echo "[DainRaku] Removing stock Debian kernels..."
+apt-get remove -y --purge $(dpkg -l | grep -E '^ii.*linux-(image|headers)-[0-9].*amd64' | grep -v liquorix | awk '{print $2}') || true
+apt-get autoremove -y
+
+# Update initramfs for the Liquorix kernel
+update-initramfs -u -k all
+
+echo "[DainRaku] Liquorix Kernel installed successfully."

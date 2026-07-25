@@ -1,0 +1,195 @@
+#!/bin/bash
+# dainraku-hwdetect — DainRaku OS Hardware Detection & Auto-Driver Installer
+# Detects all hardware components and installs the correct drivers/firmware.
+# Run automatically by Calamares post-install and on first boot.
+# Can also be run manually: sudo dainraku-hwdetect
+set -euo pipefail
+
+LOG="/var/log/dainraku-hwdetect.log"
+exec > >(tee -a "$LOG") 2>&1
+
+echo "======================================================"
+echo "  DainRaku OS Hardware Detection  —  $(date)"
+echo "======================================================"
+
+apt_install() {
+    apt-get install -y --no-install-recommends "$@" 2>/dev/null && \
+        echo "[OK] Installed: $*" || \
+        echo "[WARN] Could not install: $*"
+}
+
+# ── CPU Detection ─────────────────────────────────────────────────────────────
+echo ""
+echo "[CPU] Detecting CPU..."
+CPU_VENDOR=$(grep -m1 vendor_id /proc/cpuinfo | awk '{print $3}')
+echo "[CPU] Vendor: ${CPU_VENDOR}"
+
+if [[ "$CPU_VENDOR" == "GenuineIntel" ]]; then
+    echo "[CPU] Intel CPU detected — installing intel-microcode"
+    apt_install intel-microcode
+elif [[ "$CPU_VENDOR" == "AuthenticAMD" ]]; then
+    echo "[CPU] AMD CPU detected — installing amd64-microcode"
+    apt_install amd64-microcode
+fi
+
+# ── GPU Detection ─────────────────────────────────────────────────────────────
+echo ""
+echo "[GPU] Detecting GPU..."
+GPU_INFO=$(lspci 2>/dev/null | grep -iE '(vga|3d|display)')
+
+if echo "$GPU_INFO" | grep -qi nvidia; then
+    echo "[GPU] NVIDIA GPU detected"
+    apt_install nvidia-driver nvidia-settings nvidia-cuda-toolkit
+elif echo "$GPU_INFO" | grep -qi amd; then
+    echo "[GPU] AMD GPU detected"
+    apt_install firmware-amd-graphics mesa-vulkan-drivers mesa-va-drivers \
+        libdrm-amdgpu1 xserver-xorg-video-amdgpu
+elif echo "$GPU_INFO" | grep -qi intel; then
+    echo "[GPU] Intel GPU detected"
+    apt_install intel-media-va-driver i965-va-driver \
+        xserver-xorg-video-intel libvulkan1 mesa-vulkan-drivers
+fi
+
+# ── Wi-Fi Detection ───────────────────────────────────────────────────────────
+echo ""
+echo "[WIFI] Detecting wireless adapter..."
+WIFI_INFO=$(lspci 2>/dev/null; lsusb 2>/dev/null)
+
+if echo "$WIFI_INFO" | grep -qi "Intel.*Wireless\|Intel.*Wi-Fi\|Intel.*AX\|Intel.*AC"; then
+    echo "[WIFI] Intel Wi-Fi detected"
+    apt_install firmware-iwlwifi
+elif echo "$WIFI_INFO" | grep -qi "Realtek.*Network\|Realtek.*Wireless"; then
+    echo "[WIFI] Realtek Wi-Fi detected"
+    apt_install firmware-realtek
+elif echo "$WIFI_INFO" | grep -qi "Atheros\|QCA\|ath"; then
+    echo "[WIFI] Atheros/Qualcomm Wi-Fi detected"
+    apt_install firmware-atheros
+elif echo "$WIFI_INFO" | grep -qi "Broadcom.*BCM"; then
+    echo "[WIFI] Broadcom Wi-Fi detected"
+    apt_install broadcom-sta-dkms firmware-brcm80211
+elif echo "$WIFI_INFO" | grep -qi "Ralink\|MediaTek.*MT76"; then
+    echo "[WIFI] Ralink/MediaTek Wi-Fi detected"
+    apt_install firmware-ralink
+elif echo "$WIFI_INFO" | grep -qi "Marvell"; then
+    echo "[WIFI] Marvell Wi-Fi detected"
+    apt_install firmware-libertas
+fi
+
+# ── Bluetooth Detection ───────────────────────────────────────────────────────
+echo ""
+echo "[BT] Detecting Bluetooth adapter..."
+BT_INFO=$(lsusb 2>/dev/null | grep -i bluetooth; lspci 2>/dev/null | grep -i bluetooth)
+
+if [ -n "$BT_INFO" ]; then
+    echo "[BT] Bluetooth adapter detected"
+    apt_install bluetooth bluez bluez-tools firmware-misc-nonfree
+    systemctl enable bluetooth 2>/dev/null || true
+fi
+
+# ── Sound Detection ───────────────────────────────────────────────────────────
+echo ""
+echo "[SOUND] Detecting sound hardware..."
+SOUND_INFO=$(lspci 2>/dev/null | grep -i audio; cat /proc/asound/cards 2>/dev/null || true)
+
+if echo "$SOUND_INFO" | grep -qi "Intel.*HDA\|Intel.*DSP\|Intel.*Audio"; then
+    echo "[SOUND] Intel HDA/DSP audio detected"
+    apt_install firmware-sof-signed alsa-utils pipewire pipewire-pulse
+elif echo "$SOUND_INFO" | grep -qi "AMD.*Audio\|Radeon.*Audio"; then
+    echo "[SOUND] AMD audio detected"
+    apt_install alsa-utils pipewire pipewire-pulse
+else
+    echo "[SOUND] Generic audio — installing ALSA firmware"
+    apt_install alsa-firmware-loaders alsa-utils
+fi
+
+# ── Touchpad / Input Detection ────────────────────────────────────────────────
+echo ""
+echo "[INPUT] Detecting input devices..."
+INPUT_INFO=$(lspci 2>/dev/null; lsusb 2>/dev/null; ls /proc/bus/input/devices 2>/dev/null || true)
+
+if [ -f /proc/bus/input/devices ]; then
+    DEVICES=$(cat /proc/bus/input/devices)
+    if echo "$DEVICES" | grep -qi "Touchpad\|Synaptics\|TrackPad"; then
+        echo "[INPUT] Synaptics touchpad detected"
+        apt_install xserver-xorg-input-synaptics libinput10 xserver-xorg-input-libinput
+    fi
+    if echo "$DEVICES" | grep -qi "Touchscreen\|Touch\|Wacom"; then
+        echo "[INPUT] Touchscreen/graphics tablet detected"
+        apt_install xserver-xorg-input-evdev libwacom2 xserver-xorg-input-wacom
+    fi
+fi
+
+# ── Printer Detection ─────────────────────────────────────────────────────────
+echo ""
+echo "[PRINT] Detecting printers..."
+PRINTER_INFO=$(lpstat -p 2>/dev/null; lsusb 2>/dev/null | grep -iE "(printer|HP|Canon|Epson|Brother|Lexmark|Samsung)")
+
+if [ -n "$PRINTER_INFO" ]; then
+    echo "[PRINT] Printer detected — installing CUPS and drivers"
+    apt_install cups cups-client cups-browsed
+    if echo "$PRINTER_INFO" | grep -qi "HP\|Hewlett"; then
+        apt_install hplip hplip-gui
+    fi
+    if echo "$PRINTER_INFO" | grep -qi "Canon"; then
+        apt_install printer-driver-gutenprint
+    fi
+    if echo "$PRINTER_INFO" | grep -qi "Epson"; then
+        apt_install printer-driver-gutenprint printer-driver-escpr
+    fi
+    if echo "$PRINTER_INFO" | grep -qi "Brother"; then
+        apt_install printer-driver-brlaser
+    fi
+    systemctl enable cups 2>/dev/null || true
+fi
+
+# ── VM / Hypervisor Detection ─────────────────────────────────────────────────
+echo ""
+echo "[VM] Detecting hypervisor/virtualization environment..."
+VIRT=$(systemd-detect-virt 2>/dev/null || dmidecode -s system-product-name 2>/dev/null | tr '[:upper:]' '[:lower:]')
+
+case "$VIRT" in
+    vmware)
+        echo "[VM] VMware detected — installing open-vm-tools"
+        apt_install open-vm-tools open-vm-tools-desktop
+        ;;
+    oracle|virtualbox)
+        echo "[VM] VirtualBox detected — installing guest additions"
+        apt_install virtualbox-guest-additions-iso virtualbox-guest-utils virtualbox-guest-x11
+        ;;
+    kvm|qemu)
+        echo "[VM] QEMU/KVM detected — installing SPICE and virtio tools"
+        apt_install qemu-guest-agent spice-vdagent
+        ;;
+    microsoft|hyper-v)
+        echo "[VM] Hyper-V detected — installing hyperv-daemons"
+        apt_install hyperv-daemons
+        ;;
+    none|"")
+        echo "[VM] Running on bare metal — no VM tools needed"
+        ;;
+    *)
+        echo "[VM] Unknown environment: $VIRT"
+        ;;
+esac
+
+# ── SSD Detection & TRIM ──────────────────────────────────────────────────────
+echo ""
+echo "[DISK] Checking for SSD and configuring TRIM..."
+if lsblk -d -o name,rota 2>/dev/null | awk 'NR>1 {print $2}' | grep -q "^0$"; then
+    echo "[DISK] SSD detected — enabling fstrim timer"
+    systemctl enable fstrim.timer 2>/dev/null || true
+fi
+
+# ── Summary ───────────────────────────────────────────────────────────────────
+echo ""
+echo "======================================================"
+echo "  DainRaku HW Detection Complete — $(date)"
+echo "  Full log: ${LOG}"
+echo "======================================================"
+echo ""
+echo "System Info:"
+inxi -Fxz 2>/dev/null | head -40 || lshw -short 2>/dev/null | head -40
+
+echo ""
+echo "All detected hardware has been configured."
+echo "Please reboot for all changes to take effect."

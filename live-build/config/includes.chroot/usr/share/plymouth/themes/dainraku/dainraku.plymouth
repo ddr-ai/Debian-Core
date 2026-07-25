@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=DainRaku OS
+Description=DainRaku OS boot splash — animated neon wordmark with particle glow
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/dainraku
+ScriptFile=/usr/share/plymouth/themes/dainraku/dainraku.script

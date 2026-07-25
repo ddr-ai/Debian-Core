@@ -1,0 +1,4 @@
+# DainRaku OS — Kali Linux mirror overlay
+# Placed in config/archives/ so live-build imports it during the chroot_archives
+# stage, BEFORE package installation. This ensures Kali-only tools can be resolved.
+deb [signed-by=/usr/share/keyrings/kali-archive-keyring.gpg] http://http.kali.org/kali kali-rolling main contrib non-free non-free-firmware

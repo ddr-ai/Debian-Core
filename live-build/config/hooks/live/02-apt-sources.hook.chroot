@@ -1,0 +1,34 @@
+#!/bin/bash
+# DainRaku OS Hook: Configure APT pin preferences
+#
+# NOTE: The Kali and Liquorix APT sources and their GPG keys are configured
+# via config/archives/ and config/hooks/normal/00-import-apt-keys.hook.chroot,
+# which run BEFORE package installation (lb chroot_archives stage). This hook
+# only sets APT pin priorities — it does NOT re-add repos or keys.
+set -euo pipefail
+
+echo "[DainRaku] Configuring APT pin preferences..."
+
+# APT preferences: Kali packages always lose to Debian stable
+mkdir -p /etc/apt/preferences.d
+cat > /etc/apt/preferences.d/kali-lower-priority.pref << 'EOF'
+# DainRaku OS: Kali mirror priority — lower than Debian stable by default
+Package: *
+Pin: release o=Kali
+Pin-Priority: 100
+
+# Raise priority for Kali-specific security tools not present in Debian
+Package: metasploit-framework burpsuite beef-xss bloodhound crackmapexec empire sliver
+Pin: release o=Kali
+Pin-Priority: 500
+EOF
+
+# APT preferences: Liquorix kernel always wins over stock Debian kernel
+cat > /etc/apt/preferences.d/liquorix.pref << 'EOF'
+# DainRaku OS: Liquorix kernel — prefer over stock Debian kernel
+Package: linux-image-liquorix-amd64 linux-headers-liquorix-amd64
+Pin: release o=Liquorix
+Pin-Priority: 900
+EOF
+
+echo "[DainRaku] APT pin preferences configured."

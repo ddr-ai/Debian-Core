@@ -1,0 +1,5 @@
+# DainRaku OS — Liquorix kernel repository
+# Placed in config/archives/ so live-build imports it during the chroot_archives
+# stage, BEFORE package installation. This ensures the Liquorix kernel packages
+# can be resolved when processing the base package list.
+deb [signed-by=/usr/share/keyrings/liquorix-keyring.gpg] https://liquorix.net/debian stable main

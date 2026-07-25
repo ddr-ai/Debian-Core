@@ -1,0 +1,134 @@
+# DainRaku OS — Developer & General Tools Package List
+# Sources: Debian stable + Kali Linux APT mirror overlay
+
+# ── Version Control ───────────────────────────────────────────────────────────
+git
+git-lfs
+git-secret
+git-crypt
+gitui
+lazygit
+
+# ── Secret Detection ──────────────────────────────────────────────────────────
+gitleaks
+trufflehog
+detect-secrets
+
+# ── Python ────────────────────────────────────────────────────────────────────
+python3
+python3-pip
+python3-venv
+python3-dev
+python3-setuptools
+python3-wheel
+python3-requests
+python3-cryptography
+pipenv
+python3-poetry
+ipython3
+
+# ── Ruby ──────────────────────────────────────────────────────────────────────
+ruby
+ruby-dev
+ruby-bundler
+# 'gem' is a command provided by the ruby package above — not a separate package
+
+# ── Go ────────────────────────────────────────────────────────────────────────
+golang-go
+
+# ── Node.js / JavaScript ─────────────────────────────────────────────────────
+nodejs
+npm
+# yarn: install via 'npm install -g yarn' after first boot; Debian package is 'yarnpkg' (older)
+yarnpkg
+
+# ── Rust ──────────────────────────────────────────────────────────────────────
+rustc
+cargo
+
+# ── Java ──────────────────────────────────────────────────────────────────────
+default-jdk
+default-jre
+maven
+
+# ── Build Tools ──────────────────────────────────────────────────────────────
+build-essential
+make
+cmake
+gcc
+g++
+clang
+llvm
+autoconf
+automake
+libtool
+pkg-config
+libssl-dev
+libffi-dev
+
+# ── Containers ───────────────────────────────────────────────────────────────
+docker.io
+docker-compose
+podman
+buildah
+skopeo
+
+# ── Kubernetes & Infrastructure ───────────────────────────────────────────────
+# kubectl: install via Google apt repo (see https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/)
+# helm:    install via https://helm.sh/docs/intro/install/
+# terraform: install via HashiCorp apt repo
+ansible
+vagrant
+
+# ── Code Editors ─────────────────────────────────────────────────────────────
+# VS Code: not in Debian repos — install from https://code.visualstudio.com/docs/setup/linux
+neovim
+vim
+nano
+
+# ── Terminal Multiplexers ────────────────────────────────────────────────────
+tmux
+screen
+
+# ── Shell Utilities ──────────────────────────────────────────────────────────
+zsh
+bash
+bash-completion
+fzf
+bat
+fd-find
+ripgrep
+jq
+python3-yq
+httpie
+
+# ── Monitoring & Diagnostics ─────────────────────────────────────────────────
+htop
+btop
+glances
+iotop
+iftop
+nload
+vnstat
+sysstat
+atop
+dstat
+
+# ── Database Clients ─────────────────────────────────────────────────────────
+postgresql-client
+default-mysql-client
+sqlite3
+redis-tools
+
+# ── Network Utilities ─────────────────────────────────────────────────────────
+netcat-openbsd
+socat
+nmap
+traceroute
+mtr
+whois
+dnsutils
+curl
+wget
+aria2
+axel

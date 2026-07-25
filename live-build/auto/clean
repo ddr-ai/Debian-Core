@@ -1,0 +1,4 @@
+#!/bin/sh
+# DainRaku OS — live-build auto/clean
+set -e
+lb clean noauto "${@}"

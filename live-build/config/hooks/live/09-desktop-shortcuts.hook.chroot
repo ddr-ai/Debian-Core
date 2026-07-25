@@ -1,0 +1,85 @@
+#!/bin/bash
+# DainRaku OS Hook: Create KDE Plasma desktop shortcuts for tool categories
+set -euo pipefail
+
+echo "[DainRaku] Creating tool-category desktop shortcuts..."
+
+APPS_DIR="/usr/share/applications"
+DESKTOP_DIR="/etc/skel/Desktop"
+mkdir -p "$DESKTOP_DIR"
+
+# ── Tool Launcher Helper ──────────────────────────────────────────────────────
+create_desktop_entry() {
+    local name="$1" exec="$2" icon="$3" comment="$4" category="$5"
+    cat > "${APPS_DIR}/dainraku-${name// /-}.desktop" << EOF
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=${name}
+Comment=${comment}
+Exec=${exec}
+Icon=${icon}
+Terminal=true
+Categories=Security;${category};
+StartupNotify=false
+EOF
+    chmod +x "${APPS_DIR}/dainraku-${name// /-}.desktop"
+}
+
+# ── Reconnaissance ────────────────────────────────────────────────────────────
+create_desktop_entry "Nmap Scanner" "ghostty -e nmap -A -T4" \
+    "utilities-terminal" "Network discovery and security auditing" "Reconnaissance"
+
+create_desktop_entry "Recon-ng" "ghostty -e recon-ng" \
+    "utilities-terminal" "Web reconnaissance framework" "Reconnaissance"
+
+# ── Web Pentesting ────────────────────────────────────────────────────────────
+create_desktop_entry "Burp Suite" "burpsuite" \
+    "burpsuite" "Web security testing proxy" "WebApp"
+
+create_desktop_entry "OWASP ZAP" "zaproxy" \
+    "zaproxy" "Web application security scanner" "WebApp"
+
+# ── Exploitation ──────────────────────────────────────────────────────────────
+create_desktop_entry "Metasploit" "ghostty -e msfconsole" \
+    "utilities-terminal" "Penetration testing framework" "Exploitation"
+
+create_desktop_entry "BeEF-XSS" "beef-xss" \
+    "utilities-terminal" "Browser Exploitation Framework" "Exploitation"
+
+# ── Wireless ──────────────────────────────────────────────────────────────────
+create_desktop_entry "Aircrack-ng" "ghostty -e bash -c 'echo Enter wireless interface: && read iface && airmon-ng start \$iface'" \
+    "network-wireless" "WiFi security auditing suite" "Wireless"
+
+create_desktop_entry "Kismet" "ghostty -e kismet" \
+    "network-wireless" "Wireless network detector and sniffer" "Wireless"
+
+# ── Password Attacks ──────────────────────────────────────────────────────────
+create_desktop_entry "Hashcat" "ghostty -e hashcat --help" \
+    "utilities-terminal" "World's fastest password cracker" "PasswordCracking"
+
+create_desktop_entry "John the Ripper" "ghostty -e john --help" \
+    "utilities-terminal" "Fast password cracker" "PasswordCracking"
+
+# ── Forensics ────────────────────────────────────────────────────────────────
+create_desktop_entry "Autopsy" "autopsy" \
+    "accessories-text-editor" "Digital forensics platform" "Forensics"
+
+create_desktop_entry "Ghidra" "ghidra" \
+    "accessories-text-editor" "NSA software reverse engineering suite" "Forensics"
+
+# ── Sniffing ──────────────────────────────────────────────────────────────────
+create_desktop_entry "Wireshark" "wireshark" \
+    "wireshark" "Network protocol analyzer" "Sniffing"
+
+create_desktop_entry "Bettercap" "ghostty -e sudo bettercap" \
+    "network-monitor" "Swiss army knife for network attacks" "Sniffing"
+
+# ── Reporting ────────────────────────────────────────────────────────────────
+create_desktop_entry "CherryTree Notes" "cherrytree" \
+    "cherrytree" "Hierarchical note-taking application" "Reporting"
+
+create_desktop_entry "Dradis Framework" "ghostty -e dradis" \
+    "accessories-text-editor" "Pentest collaboration platform" "Reporting"
+
+echo "[DainRaku] Desktop shortcuts created."

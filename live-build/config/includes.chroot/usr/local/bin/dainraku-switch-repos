@@ -1,0 +1,102 @@
+#!/bin/bash
+# dainraku-switch-repos — DainRaku OS Repository Switcher
+# Interactive menu to safely switch between Debian stable/testing/sid.
+# Usage: sudo dainraku-switch-repos
+set -euo pipefail
+
+ROLLING_LIST="/etc/apt/sources.list.d/debian-rolling.list"
+PREF_FILE="/etc/apt/preferences.d/dainraku.pref"
+
+if [[ $EUID -ne 0 ]]; then
+    echo "Error: This script must be run as root (sudo dainraku-switch-repos)"
+    exit 1
+fi
+
+show_current() {
+    echo ""
+    echo "Current active repositories:"
+    echo "  Stable (bookworm):  [ALWAYS ON]"
+    if grep -q "^deb.*testing" "$ROLLING_LIST" 2>/dev/null; then
+        echo "  Testing (trixie):   [ENABLED]"
+    else
+        echo "  Testing (trixie):   [disabled]"
+    fi
+    if grep -q "^deb.*sid" "$ROLLING_LIST" 2>/dev/null; then
+        echo "  Sid (unstable):     [ENABLED]"
+    else
+        echo "  Sid (unstable):     [disabled]"
+    fi
+    echo ""
+}
+
+enable_testing() {
+    echo "[dainraku-switch-repos] Enabling Debian Testing..."
+    sed -i 's/^# deb http:\/\/deb.debian.org\/debian testing/deb http:\/\/deb.debian.org\/debian testing/' "$ROLLING_LIST"
+    sed -i 's/^# deb-src http:\/\/deb.debian.org\/debian testing/deb-src http:\/\/deb.debian.org\/debian testing/' "$ROLLING_LIST"
+    sed -i 's/^# deb http:\/\/security.debian.org\/debian-security testing/deb http:\/\/security.debian.org\/debian-security testing/' "$ROLLING_LIST"
+    # Raise testing priority from 1 to 50 (still below stable)
+    sed -i '/Pin: release a=testing/{n;s/Pin-Priority: 1/Pin-Priority: 50/}' "$PREF_FILE"
+    apt-get update
+    echo "[OK] Testing enabled. Packages from testing will supplement stable."
+}
+
+disable_testing() {
+    echo "[dainraku-switch-repos] Disabling Debian Testing..."
+    sed -i 's/^deb http:\/\/deb.debian.org\/debian testing/# deb http:\/\/deb.debian.org\/debian testing/' "$ROLLING_LIST"
+    sed -i 's/^deb-src http:\/\/deb.debian.org\/debian testing/# deb-src http:\/\/deb.debian.org\/debian testing/' "$ROLLING_LIST"
+    sed -i 's/^deb http:\/\/security.debian.org\/debian-security testing/# deb http:\/\/security.debian.org\/debian-security testing/' "$ROLLING_LIST"
+    sed -i '/Pin: release a=testing/{n;s/Pin-Priority: 50/Pin-Priority: 1/}' "$PREF_FILE"
+    apt-get update
+    echo "[OK] Testing disabled."
+}
+
+enable_sid() {
+    echo "[dainraku-switch-repos] Enabling Debian Sid (Unstable)..."
+    echo "WARNING: Sid can introduce instability. Proceed with caution."
+    sed -i 's/^# deb http:\/\/deb.debian.org\/debian sid/deb http:\/\/deb.debian.org\/debian sid/' "$ROLLING_LIST"
+    sed -i 's/^# deb-src http:\/\/deb.debian.org\/debian sid/deb-src http:\/\/deb.debian.org\/debian sid/' "$ROLLING_LIST"
+    sed -i '/Pin: release a=sid/{n;s/Pin-Priority: 1/Pin-Priority: 50/}' "$PREF_FILE"
+    apt-get update
+    echo "[OK] Sid enabled."
+}
+
+disable_sid() {
+    echo "[dainraku-switch-repos] Disabling Debian Sid..."
+    sed -i 's/^deb http:\/\/deb.debian.org\/debian sid/# deb http:\/\/deb.debian.org\/debian sid/' "$ROLLING_LIST"
+    sed -i 's/^deb-src http:\/\/deb.debian.org\/debian sid/# deb-src http:\/\/deb.debian.org\/debian sid/' "$ROLLING_LIST"
+    sed -i '/Pin: release a=sid/{n;s/Pin-Priority: 50/Pin-Priority: 1/}' "$PREF_FILE"
+    apt-get update
+    echo "[OK] Sid disabled."
+}
+
+# ── Main Menu ─────────────────────────────────────────────────────────────────
+while true; do
+    clear
+    echo "============================================"
+    echo "   DainRaku OS — Repository Switcher"
+    echo "============================================"
+    show_current
+    echo "Options:"
+    echo "  1) Enable Debian Testing (trixie)"
+    echo "  2) Disable Debian Testing"
+    echo "  3) Enable Debian Sid (unstable)"
+    echo "  4) Disable Debian Sid"
+    echo "  5) Show current sources.list"
+    echo "  6) Run apt update"
+    echo "  q) Quit"
+    echo ""
+    read -p "Choice: " choice
+
+    case "$choice" in
+        1) enable_testing ;;
+        2) disable_testing ;;
+        3) enable_sid ;;
+        4) disable_sid ;;
+        5) cat "$ROLLING_LIST" ;;
+        6) apt-get update ;;
+        q|Q) echo "Goodbye."; exit 0 ;;
+        *) echo "Invalid choice." ;;
+    esac
+    echo ""
+    read -p "Press Enter to continue..."
+done

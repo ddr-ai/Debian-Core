@@ -1,0 +1,41 @@
+# DainRaku OS — Social Engineering Package List
+# Sources: Debian stable + Kali Linux APT mirror overlay
+
+# ── Social Engineering Frameworks ─────────────────────────────────────────────
+set
+beef-xss
+
+# ── Phishing Frameworks ───────────────────────────────────────────────────────
+gophish
+evilginx2
+muraena
+nexphisher
+zphisher
+blackeye
+
+# ── Phone & SMS ──────────────────────────────────────────────────────────────
+phoneinfoga
+
+# ── Credential Harvesting ────────────────────────────────────────────────────
+credsniper
+# evilginx3 — install via: go install github.com/kgretzky/evilginx/v3@latest
+
+# ── Camera & Webcam ───────────────────────────────────────────────────────────
+camphish
+saycheese
+
+# ── Tracking & Tracing ───────────────────────────────────────────────────────
+trape
+
+# ── OSINT Support ────────────────────────────────────────────────────────────
+creepy
+osintgram
+namechk
+
+# ── Email Spoofing & Testing ──────────────────────────────────────────────────
+swaks
+sendemail
+mailspoof
+
+# ── URL Shorteners & Redirectors (for phishing tests) ───────────────────────
+# (typically installed via pip; see hooks/07-pip-tools.hook.chroot)

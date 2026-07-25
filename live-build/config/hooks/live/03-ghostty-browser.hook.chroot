@@ -1,0 +1,77 @@
+#!/bin/bash
+# DainRaku OS Hook: Set Ghostty as default terminal and BrowserOS as default browser
+set -euo pipefail
+
+echo "[DainRaku] Configuring Ghostty and BrowserOS as system defaults..."
+
+# ── Ghostty Terminal ──────────────────────────────────────────────────────────
+# Install Ghostty if not already in package lists
+if ! command -v ghostty &>/dev/null; then
+    echo "[DainRaku] Installing Ghostty terminal..."
+    # Ghostty is installed via its own deb package or built from source
+    # Try Kali mirror first, then fallback to snap/flatpak
+    apt-get install -y ghostty 2>/dev/null || {
+        echo "[DainRaku] Ghostty not in APT — installing via flatpak..."
+        apt-get install -y flatpak
+        flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+        flatpak install -y flathub com.mitchellh.ghostty
+    }
+fi
+
+# Set Ghostty as the default terminal emulator for KDE and XDG
+update-alternatives --install /usr/bin/x-terminal-emulator x-terminal-emulator /usr/bin/ghostty 100 || true
+update-alternatives --set x-terminal-emulator /usr/bin/ghostty || true
+
+# KDE plasma default terminal via kconf
+mkdir -p /etc/skel/.config
+cat > /etc/skel/.config/kdeglobals << 'EOF'
+[General]
+TerminalApplication=ghostty
+TerminalService=com.mitchellh.ghostty
+EOF
+
+# Ghostty config with dark theme and nerd font
+mkdir -p /etc/skel/.config/ghostty
+cat > /etc/skel/.config/ghostty/config << 'EOF'
+# DainRaku OS — Ghostty Configuration
+font-family = "JetBrains Mono"
+font-size = 13
+theme = "dark"
+background-opacity = 0.95
+background-blur-radius = 20
+cursor-style = block
+cursor-style-blink = true
+scrollback-limit = 10000
+copy-on-select = true
+window-decoration = false
+EOF
+
+# ── BrowserOS ────────────────────────────────────────────────────────────────
+# BrowserOS open-source browser installation
+if ! command -v browseros &>/dev/null; then
+    echo "[DainRaku] Installing BrowserOS..."
+    apt-get install -y browseros 2>/dev/null || {
+        # Fallback: add BrowserOS PPA/repo
+        curl -fsSL https://browseros.dev/linux/signing-key.gpg | gpg --dearmor -o /usr/share/keyrings/browseros-keyring.gpg
+        echo "deb [signed-by=/usr/share/keyrings/browseros-keyring.gpg] https://apt.browseros.dev stable main" \
+            > /etc/apt/sources.list.d/browseros.list
+        apt-get update -y
+        apt-get install -y browseros
+    }
+fi
+
+# Set BrowserOS as XDG default browser
+xdg-settings set default-web-browser browseros.desktop 2>/dev/null || true
+
+# Update /etc/alternatives
+update-alternatives --install /usr/bin/x-www-browser x-www-browser /usr/bin/browseros 200 || true
+update-alternatives --install /usr/bin/gnome-www-browser gnome-www-browser /usr/bin/browseros 200 || true
+
+# KDE default browser
+mkdir -p /etc/skel/.config
+cat >> /etc/skel/.config/kdeglobals << 'EOF'
+[General]
+BrowserApplication=browseros.desktop
+EOF
+
+echo "[DainRaku] Ghostty and BrowserOS configured as system defaults."

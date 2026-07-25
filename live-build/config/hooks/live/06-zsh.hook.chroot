@@ -1,0 +1,27 @@
+#!/bin/bash
+# DainRaku OS Hook: Install oh-my-zsh and configure ZSH for pentesting
+set -euo pipefail
+
+echo "[DainRaku] Configuring ZSH with oh-my-zsh..."
+
+# Install oh-my-zsh for the pentester user and root
+export HOME=/root
+export RUNZSH=no
+export CHSH=no
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+
+# Install powerlevel10k theme
+git clone --depth=1 https://github.com/romkatv/powerlevel10k.git \
+    /root/.oh-my-zsh/custom/themes/powerlevel10k
+
+# Install useful ZSH plugins
+git clone https://github.com/zsh-users/zsh-autosuggestions \
+    /root/.oh-my-zsh/custom/plugins/zsh-autosuggestions
+git clone https://github.com/zsh-users/zsh-syntax-highlighting \
+    /root/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
+
+# Copy oh-my-zsh to pentester user
+cp -r /root/.oh-my-zsh /home/pentester/.oh-my-zsh
+chown -R pentester:pentester /home/pentester/.oh-my-zsh
+
+echo "[DainRaku] ZSH configured."

@@ -1,0 +1,4 @@
+#!/bin/sh
+# DainRaku OS — live-build auto/build
+set -e
+lb build noauto "${@}"

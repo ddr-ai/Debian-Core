@@ -1,0 +1,59 @@
+# DainRaku OS — Wireless Attack Package List
+# Sources: Debian stable + Kali Linux APT mirror overlay
+
+# ── Aircrack-ng Suite ────────────────────────────────────────────────────────
+# aircrack-ng provides: airmon-ng airodump-ng aireplay-ng airbase-ng etc.
+aircrack-ng
+airgraph-ng
+
+# ── WPS Attacks ──────────────────────────────────────────────────────────────
+reaver
+bully
+pixiewps
+oneshot
+
+# ── Evil AP & MITM ───────────────────────────────────────────────────────────
+hostapd-wpe
+eaphammer
+wifiphisher
+fluxion
+
+# ── Packet Capture & Analysis ────────────────────────────────────────────────
+hcxdumptool
+hcxtools
+# hcxkeys: not a separate package — it is included in hcxtools
+
+# ── Network MITM ─────────────────────────────────────────────────────────────
+bettercap
+wifijammer
+mdk4
+mdk3
+
+# ── WPA Dictionary Attacks ────────────────────────────────────────────────────
+cowpatty
+pyrit
+
+# ── Automated Wireless ────────────────────────────────────────────────────────
+wifite
+wifite2
+
+# ── Bluetooth ────────────────────────────────────────────────────────────────
+blue-hydra
+btlejuice
+gatttool
+ubertooth
+bluez
+bluez-tools
+bluetooth
+blueberry
+# gatttool: command provided by the bluez package (listed above) — not a separate package
+
+# ── Wireless Tools ───────────────────────────────────────────────────────────
+wireless-tools
+iw
+rfkill
+macchanger
+macof
+kismet
+linssid
+horst

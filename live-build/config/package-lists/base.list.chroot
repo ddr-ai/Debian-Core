@@ -1,0 +1,255 @@
+# DainRaku OS — Base System Package List
+# Desktop: KDE Plasma | Terminal: Ghostty | Browser: BrowserOS
+# Kernel: Liquorix | Filesystem: BTRFS | Installer: Calamares
+# NOTE: No games or entertainment packages are included.
+
+# ── Core System ──────────────────────────────────────────────────────────────
+systemd
+systemd-sysv
+dbus
+dbus-user-session
+apt
+apt-utils
+apt-transport-https
+ca-certificates
+gnupg
+curl
+wget
+sudo
+locales
+console-setup
+keyboard-configuration
+tzdata
+bash-completion
+
+# ── KDE Plasma Desktop ───────────────────────────────────────────────────────
+plasma-desktop
+plasma-workspace
+plasma-nm
+plasma-pa
+plasma-disks
+plasma-vault
+plasma-browser-integration
+kscreen
+kinfocenter
+kio
+kio-extras
+kde-cli-tools
+kde-spectacle
+dolphin
+ark
+kate
+kwrite
+okular
+gwenview
+elisa
+kdeconnect
+sddm
+sddm-theme-breeze
+powerdevil
+bluedevil
+print-manager
+kde-config-sddm
+kde-config-screenlocker
+kde-config-tablet
+qt6-wayland
+xdg-desktop-portal-kde
+xdg-desktop-portal
+pipewire
+pipewire-pulse
+pipewire-audio
+wireplumber
+xwayland
+plasma-workspace-wayland
+wayland-protocols
+xorg
+openbox
+lightdm-gtk-greeter
+
+# ── Fonts ─────────────────────────────────────────────────────────────────────
+fonts-noto
+fonts-noto-color-emoji
+fonts-liberation
+fonts-firacode
+fonts-jetbrains-mono
+fonts-hack
+fonts-powerline
+ttf-bitstream-vera
+fonts-dejavu
+
+# ── BTRFS & Filesystem Tools ─────────────────────────────────────────────────
+btrfs-progs
+btrfs-compsize
+snapper
+apt-btrfs-snapshot
+e2fsprogs
+dosfstools
+ntfs-3g
+exfatprogs
+lvm2
+cryptsetup
+cryptsetup-initramfs
+mdadm
+
+# ── ZRAM (replaces swap partition) ───────────────────────────────────────────
+# zram-tools provides the zramswap service and configuration
+zram-tools
+
+# ── Calamares Installer ───────────────────────────────────────────────────────
+calamares
+calamares-settings-debian
+os-prober
+grub-efi-amd64
+grub-pc-bin
+grub2-common
+shim-signed
+efibootmgr
+
+# ── Hardware Detection Dependencies ──────────────────────────────────────────
+inxi
+lshw
+pciutils
+usbutils
+dmidecode
+hwinfo
+lsscsi
+hardinfo
+glances
+cpuid
+edid-decode
+
+# ── Firmware (broad coverage for hwdetect) ────────────────────────────────────
+firmware-linux
+firmware-linux-free
+firmware-linux-nonfree
+firmware-misc-nonfree
+firmware-amd-graphics
+firmware-intel-sound
+firmware-sof-signed
+firmware-iwlwifi
+firmware-realtek
+firmware-atheros
+firmware-b43-installer
+firmware-brcm80211
+firmware-libertas
+firmware-ralink
+intel-microcode
+amd64-microcode
+
+# ── Network Tools ────────────────────────────────────────────────────────────
+network-manager
+network-manager-gnome
+iproute2
+iputils-ping
+net-tools
+dnsutils
+wireless-tools
+wpasupplicant
+rfkill
+nfs-common
+samba-common-bin
+openssh-client
+openssh-server
+
+# ── Bluetooth ────────────────────────────────────────────────────────────────
+bluetooth
+bluez
+bluez-tools
+blueman
+
+# ── Printing (auto-configured by hwdetect) ───────────────────────────────────
+cups
+cups-browsed
+cups-client
+printer-driver-all
+
+# ── Archive & File Managers ──────────────────────────────────────────────────
+p7zip-full
+unrar-free
+zip
+unzip
+tar
+gzip
+bzip2
+xz-utils
+lzop
+zstd
+
+# ── Shell & Terminal Essentials ───────────────────────────────────────────────
+zsh
+bash
+tmux
+screen
+mc
+ranger
+tree
+ncdu
+lsof
+strace
+ltrace
+file
+binutils
+binutils-common
+xxd
+hexedit
+
+# ── Text Editors ─────────────────────────────────────────────────────────────
+vim
+vim-runtime
+neovim
+nano
+
+# ── System Monitoring ────────────────────────────────────────────────────────
+htop
+btop
+iotop
+iftop
+nload
+sysstat
+procps
+atop
+dstat
+vnstat
+
+# ── Python & pip ─────────────────────────────────────────────────────────────
+python3
+python3-pip
+python3-venv
+python3-dev
+python3-setuptools
+python3-wheel
+
+# ── Security: Certificates & Crypto ──────────────────────────────────────────
+openssl
+gnutls-bin
+libssl-dev
+libgcrypt20
+
+# ── Logging ─────────────────────────────────────────────────────────────────
+rsyslog
+logrotate
+
+# ── Misc System Utilities ────────────────────────────────────────────────────
+less
+man-db
+manpages
+whiptail
+dialog
+expect
+at
+cron
+acl
+attr
+# lsattr and chattr are commands provided by the e2fsprogs package (listed above)
+inotify-tools
+parallel
+pv
+progress
+rsync
+git
+git-lfs
+jq
+ripgrep
+fd-find
+fzf
+bat

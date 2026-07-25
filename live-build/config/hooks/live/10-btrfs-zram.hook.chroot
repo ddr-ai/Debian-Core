@@ -1,0 +1,85 @@
+#!/bin/bash
+# DainRaku OS Hook: Configure BTRFS mount options and ZRAM swap
+set -euo pipefail
+
+echo "[DainRaku] Configuring BTRFS optimizations and ZRAM swap..."
+
+# ── ZRAM Swap Configuration ────────────────────────────────────────────────────
+cat > /etc/default/zramswap << 'EOF'
+# DainRaku OS: ZRAM swap configuration
+# Use 50% of RAM as compressed swap (zstd compression)
+ALGO=zstd
+PERCENT=50
+PRIORITY=100
+EOF
+
+# Enable zram-tools service
+systemctl enable zramswap 2>/dev/null || true
+
+# ── systemd journal on BTRFS ──────────────────────────────────────────────────
+# Journal goes to /var (which will be @var subvolume on installed system)
+mkdir -p /etc/systemd/journald.conf.d
+cat > /etc/systemd/journald.conf.d/dainraku.conf << 'EOF'
+# DainRaku OS: Journal configuration
+[Journal]
+Storage=persistent
+Compress=yes
+SystemMaxUse=512M
+SystemKeepFree=256M
+MaxRetentionSec=1month
+EOF
+
+# ── Snapper BTRFS Snapshot Configuration ──────────────────────────────────────
+# Snapper config is created post-install by Calamares module
+# Pre-configure the default snapper template
+mkdir -p /etc/snapper/configs
+cat > /etc/snapper/config-templates/default << 'EOF'
+# DainRaku OS: Snapper BTRFS snapshot configuration
+SUBVOLUME="/"
+FSTYPE="btrfs"
+QGROUP=""
+SPACE_LIMIT="0.5"
+FREE_LIMIT="0.2"
+ALLOW_USERS=""
+ALLOW_GROUPS=""
+SYNC_ACL="no"
+BACKGROUND_COMPARISON="yes"
+NUMBER_CLEANUP="yes"
+NUMBER_MIN_AGE="1800"
+NUMBER_LIMIT="50"
+NUMBER_LIMIT_IMPORTANT="10"
+TIMELINE_CREATE="yes"
+TIMELINE_CLEANUP="yes"
+TIMELINE_MIN_AGE="1800"
+TIMELINE_LIMIT_HOURLY="5"
+TIMELINE_LIMIT_DAILY="7"
+TIMELINE_LIMIT_WEEKLY="0"
+TIMELINE_LIMIT_MONTHLY="0"
+TIMELINE_LIMIT_YEARLY="0"
+EMPTY_PRE_POST_CLEANUP="yes"
+EMPTY_PRE_POST_MIN_AGE="1800"
+EOF
+
+# ── I/O Scheduler Tuning ──────────────────────────────────────────────────────
+# Use mq-deadline for SSDs, bfq for HDDs (autodetected by udev)
+cat > /etc/udev/rules.d/60-ioschedulers.rules << 'EOF'
+# DainRaku OS: I/O scheduler optimization
+ACTION=="add|change", KERNEL=="sd[a-z]*", ATTR{queue/rotational}=="0", ATTR{queue/scheduler}="mq-deadline"
+ACTION=="add|change", KERNEL=="sd[a-z]*", ATTR{queue/rotational}=="1", ATTR{queue/scheduler}="bfq"
+ACTION=="add|change", KERNEL=="nvme[0-9]*", ATTR{queue/scheduler}="none"
+EOF
+
+# ── vm.swappiness tuning ──────────────────────────────────────────────────────
+cat > /etc/sysctl.d/99-dainraku.conf << 'EOF'
+# DainRaku OS: Kernel tuning for performance
+vm.swappiness=10
+vm.dirty_ratio=10
+vm.dirty_background_ratio=5
+net.core.netdev_max_backlog=300000
+net.core.rmem_max=16777216
+net.core.wmem_max=16777216
+net.ipv4.tcp_fastopen=3
+net.ipv4.tcp_congestion_control=bbr
+EOF
+
+echo "[DainRaku] BTRFS optimizations and ZRAM configured."

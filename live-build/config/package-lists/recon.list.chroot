@@ -1,0 +1,95 @@
+# DainRaku OS — Reconnaissance & OSINT Package List
+# Sources: Debian stable + Kali Linux APT mirror overlay
+
+# ── Network Scanners ─────────────────────────────────────────────────────────
+nmap
+masscan
+zmap
+netdiscover
+arp-scan
+nbtscan
+onesixtyone
+snmp
+snmpd
+unicornscan
+
+# ── Subdomain & DNS Enumeration ──────────────────────────────────────────────
+amass
+subfinder
+dnsx
+sublist3r
+massdns
+dnsenum
+dnsrecon
+fierce
+dnstwist
+urlcrazy
+dnschef
+dnscat2
+
+# ── OSINT Frameworks ─────────────────────────────────────────────────────────
+theharvester
+recon-ng
+spiderfoot
+maltego
+osrframework
+
+# ── Web Crawler & Tech Detection ─────────────────────────────────────────────
+whatweb
+wafw00f
+eyewitness
+gowitness
+photon
+httrack
+
+# ── Username & Email OSINT ────────────────────────────────────────────────────
+sherlock
+maigret
+holehe
+h8mail
+emailharvester
+
+# ── Metadata & Document OSINT ─────────────────────────────────────────────────
+metagoofil
+libimage-exiftool-perl
+# pdfinfo: command provided by the poppler-utils package (listed below)
+poppler-utils
+mat2
+
+# ── HTTP Probing & Discovery ──────────────────────────────────────────────────
+httpx-toolkit
+nuclei
+katana
+hakrawler
+
+# ── Network Diagnostics ───────────────────────────────────────────────────────
+whois
+dnsutils
+traceroute
+mtr
+hping3
+p0f
+dmitry
+amap
+xprobe2
+
+# ── Passive Reconnaissance ────────────────────────────────────────────────────
+shodan
+censys-cli
+waybackurls
+gau
+unfurl
+gf
+
+# ── Geolocation & Social ──────────────────────────────────────────────────────
+creepy
+osintgram
+tinfoleak
+
+# ── Certificate Transparency ─────────────────────────────────────────────────
+certspotter
+crtsh-query
+
+# ── Scapy & Packet Tools ──────────────────────────────────────────────────────
+python3-scapy
+packetsender

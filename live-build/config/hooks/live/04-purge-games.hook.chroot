@@ -1,0 +1,70 @@
+#!/bin/bash
+# DainRaku OS Hook: Remove all games and entertainment packages
+# Also pins games to priority -1 so they can never be accidentally installed.
+set -euo pipefail
+
+echo "[DainRaku] Purging all game packages..."
+
+GAME_PACKAGES=(
+    # Common game packages
+    gnome-games gnome-mahjongg gnome-mines gnome-sudoku gnome-chess
+    kde-games ksudoku kolf kbattleship kapman kblocks kbreakout
+    kmines kmahjongg kpat ksnakeduel knavalbattle kubrick
+    frozen-bubble supertux supertuxkart openarena tuxracer
+    extremetuxracer 0ad freeciv wesnoth wesnoth-data
+    nethack nethack-console nethack-x11 minetest
+    dosbox dosbox-staging
+    scummvm
+    chocolate-doom prboom-plus freedoom
+    flightgear flightgear-data-base
+    pingus
+    alex4
+    lbreakout2
+    tali
+    quadrapassel
+    swell-foop
+    five-or-more
+    four-in-a-row
+    iagno
+    hitori
+    lightsoff
+    robots
+    chess
+    bsdgames
+    moon-buggy
+    pacman4console
+    ninvaders
+    greed
+    adventure
+    # Steam and gaming platforms
+    steam steam-installer lutris wine wine32 wine64 winetricks
+    playonlinux
+    # Media games
+    games-* *-game
+)
+
+# Remove each game package if installed
+for pkg in "${GAME_PACKAGES[@]}"; do
+    apt-get remove --purge -y "$pkg" 2>/dev/null || true
+done
+
+# Pattern-based purge for any remaining game packages
+apt-get remove --purge -y $(dpkg -l | awk '/^ii/{print $2}' | grep -Ei '(game|games|arcade|puzzle|chess|pinball|solitaire|tetris|minesweep)' | tr '\n' ' ') 2>/dev/null || true
+
+# Clean up orphaned dependencies
+apt-get autoremove -y
+
+# APT pin: block ALL game packages permanently
+cat > /etc/apt/preferences.d/block-games.pref << 'EOF'
+# DainRaku OS: Block all game packages
+# Games have no place on a professional pentesting OS.
+Package: gnome-games kde-games gnome-mahjongg gnome-mines gnome-sudoku
+Package: ksudoku kolf kbattleship kapman kblocks kbreakout kmines
+Package: supertux supertuxkart openarena tuxracer extremetuxracer
+Package: frozen-bubble 0ad freeciv wesnoth nethack minetest dosbox
+Package: scummvm bsdgames moon-buggy pacman4console ninvaders steam lutris
+Pin: release *
+Pin-Priority: -1
+EOF
+
+echo "[DainRaku] All game packages removed and permanently blocked."

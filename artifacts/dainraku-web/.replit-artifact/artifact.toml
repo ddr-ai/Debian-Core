@@ -1,0 +1,27 @@
+kind = "web"
+previewPath = "/"
+title = "DainRaku OS"
+version = "1.0.0"
+id = "artifacts/dainraku-web"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 22712
+
+[services.development]
+run = "pnpm --filter @workspace/dainraku-web run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/dainraku-web", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/dainraku-web/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "22712"
+BASE_PATH = "/"

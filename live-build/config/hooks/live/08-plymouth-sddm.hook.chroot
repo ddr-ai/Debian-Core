@@ -1,0 +1,53 @@
+#!/bin/bash
+# DainRaku OS Hook: Configure Plymouth boot splash and SDDM login theme
+set -euo pipefail
+
+echo "[DainRaku] Configuring Plymouth boot splash..."
+
+# Install plymouth
+apt-get install -y plymouth plymouth-themes libplymouth5 plymouth-label
+
+# Activate the dainraku Plymouth theme (files placed via includes.chroot)
+update-alternatives --install /usr/share/plymouth/themes/default.plymouth \
+    default.plymouth /usr/share/plymouth/themes/dainraku/dainraku.plymouth 200 || true
+update-alternatives --set default.plymouth \
+    /usr/share/plymouth/themes/dainraku/dainraku.plymouth 2>/dev/null || true
+
+# Write /etc/plymouth/plymouthd.conf
+mkdir -p /etc/plymouth
+cat > /etc/plymouth/plymouthd.conf << 'EOF'
+# DainRaku OS Plymouth Configuration
+[Daemon]
+Theme=dainraku
+ShowDelay=0
+EOF
+
+# Update initramfs to include the dainraku theme
+update-initramfs -u -k all
+
+# ── SDDM ─────────────────────────────────────────────────────────────────────
+echo "[DainRaku] Configuring SDDM login theme..."
+
+apt-get install -y sddm
+
+mkdir -p /etc/sddm.conf.d
+cat > /etc/sddm.conf.d/dainraku.conf << 'EOF'
+[Theme]
+Current=dainraku
+CursorTheme=breeze_cursors
+Font=JetBrains Mono,11,-1,5,50,0,0,0,0,0
+
+[General]
+InputMethod=
+
+[X11]
+EnableHiDPI=true
+
+[Wayland]
+EnableHiDPI=true
+EOF
+
+# Enable SDDM as the display manager
+systemctl enable sddm 2>/dev/null || update-rc.d sddm defaults
+
+echo "[DainRaku] Plymouth and SDDM configured."

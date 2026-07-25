@@ -1,0 +1,21 @@
+# DainRaku OS — Debian Rolling Repositories
+# ============================================================
+# DISABLED by default. Use 'dainraku-switch-repos' to enable.
+# Run 'sudo apt update' after enabling any of these repos.
+# WARNING: Enabling testing or sid may cause system instability.
+# ============================================================
+
+# --- Debian Testing (Trixie) ---
+# Suitable for: newer packages with moderate stability risk
+# deb http://deb.debian.org/debian testing main contrib non-free non-free-firmware
+# deb-src http://deb.debian.org/debian testing main contrib non-free non-free-firmware
+# deb http://security.debian.org/debian-security testing-security main contrib non-free non-free-firmware
+
+# --- Debian Unstable (Sid) ---
+# Suitable for: bleeding-edge packages, highest instability risk
+# deb http://deb.debian.org/debian sid main contrib non-free non-free-firmware
+# deb-src http://deb.debian.org/debian sid main contrib non-free non-free-firmware
+
+# --- Debian Experimental ---
+# WARNING: Extremely unstable. Use only for specific packages.
+# deb http://deb.debian.org/debian experimental main contrib non-free non-free-firmware

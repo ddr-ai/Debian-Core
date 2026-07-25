@@ -1,0 +1,94 @@
+// DainRaku OS Plymouth Boot Animation Script
+// Renders the DainRaku wordmark with neon glow and particle effects
+
+// ── Color Palette ─────────────────────────────────────────────────────────────
+bgcolor.r = 0.04;  // Near-black background
+bgcolor.g = 0.055;
+bgcolor.b = 0.07;
+
+neon_r = 0.0;      // Neon cyan accent
+neon_g = 0.94;
+neon_b = 1.0;
+
+dim_r  = 0.0;
+dim_g  = 0.35;
+dim_b  = 0.45;
+
+// ── Screen Setup ─────────────────────────────────────────────────────────────
+screen.w = Window.GetWidth(0);
+screen.h = Window.GetHeight(0);
+
+cx = screen.w / 2;
+cy = screen.h / 2;
+
+// ── Background ────────────────────────────────────────────────────────────────
+fun paint_background() {
+    Window.SetBackgroundTopColor(bgcolor.r, bgcolor.g, bgcolor.b);
+    Window.SetBackgroundBottomColor(0.02, 0.03, 0.04);
+}
+
+// ── Title Text ────────────────────────────────────────────────────────────────
+title_image  = Image.Text("DainRaku", 1.0, 1.0, 1.0, 1, "JetBrains Mono Bold 32");
+sub_image    = Image.Text("OS", neon_r, neon_g, neon_b, 1, "JetBrains Mono Light 24");
+tagline      = Image.Text("Precision. Power. Penetration.", dim_r, dim_g+0.3, dim_b+0.3, 1, "JetBrains Mono 12");
+version_text = Image.Text("v1.0  |  Liquorix Kernel  |  KDE Plasma", dim_r, dim_g, dim_b, 1, "JetBrains Mono 10");
+
+title_sprite   = Sprite(title_image);
+sub_sprite     = Sprite(sub_image);
+tag_sprite     = Sprite(tagline);
+ver_sprite     = Sprite(version_text);
+
+// ── Progress Bar ─────────────────────────────────────────────────────────────
+BAR_WIDTH  = 400;
+BAR_HEIGHT = 3;
+bar_x = cx - BAR_WIDTH / 2;
+bar_y = cy + 90;
+
+bar_bg_image = Image(BAR_WIDTH, BAR_HEIGHT);
+bar_bg_pixel = Image.NewGradient(0, dim_r, dim_g, dim_b, 0.3,
+                                  0, dim_r, dim_g, dim_b, 0.3);
+bar_bg_image.Scale(BAR_WIDTH, BAR_HEIGHT).Fill(bar_bg_pixel);
+bar_bg = Sprite(bar_bg_image);
+bar_bg.SetPosition(bar_x, bar_y, 2);
+
+progress_image = Image(BAR_WIDTH, BAR_HEIGHT);
+progress_pixel = Image.NewGradient(0, neon_r, neon_g, neon_b, 0.8,
+                                    0, dim_r, dim_g+0.6, dim_b+0.7, 0.4);
+progress_image.Scale(1, BAR_HEIGHT).Fill(progress_pixel);
+progress_sprite = Sprite(progress_image);
+progress_sprite.SetPosition(bar_x, bar_y, 3);
+
+current_progress = 0.0;
+
+fun refresh_callback() {
+    // Fade in the logo
+    alpha = Math.Min(1.0, Plymouth.GetBootProgress() * 3.0 + 0.1);
+
+    title_sprite.SetPosition(cx - title_image.GetWidth() / 2 - sub_image.GetWidth() / 2 - 8, cy - title_image.GetHeight() / 2, 10);
+    title_sprite.SetOpacity(alpha);
+
+    sub_sprite.SetPosition(cx + title_image.GetWidth() / 2 - sub_image.GetWidth() / 2 + 4, cy - sub_image.GetHeight() / 2 + 8, 10);
+    sub_sprite.SetOpacity(alpha);
+
+    tag_sprite.SetPosition(cx - tagline.GetWidth() / 2, cy + 50, 10);
+    tag_sprite.SetOpacity(alpha * 0.7);
+
+    ver_sprite.SetPosition(cx - version_text.GetWidth() / 2, cy + 72, 10);
+    ver_sprite.SetOpacity(alpha * 0.5);
+
+    // Glow pulse on the neon "OS" text
+    t = Plymouth.GetCurrentTime();
+    glow = 0.6 + 0.4 * Math.Sin(t * 3.0);
+    sub_sprite.SetOpacity(alpha * glow);
+}
+
+fun progress_callback(duration, progress) {
+    current_progress = progress;
+    bar_w = Math.Floor(BAR_WIDTH * progress);
+    if (bar_w < 1) bar_w = 1;
+    progress_sprite.SetImage(Image(bar_w, BAR_HEIGHT));
+}
+
+paint_background();
+Plymouth.SetRefreshFunction(refresh_callback);
+Plymouth.SetBootProgressFunction(progress_callback);

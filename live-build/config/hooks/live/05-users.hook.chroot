@@ -1,0 +1,41 @@
+#!/bin/bash
+# DainRaku OS Hook: Create default pentester user
+# SECURITY NOTE: Default credentials below are intentional for the LIVE SESSION ONLY.
+# Calamares creates a real user account with a password chosen by the user at install time.
+# The 'pentester' live-session user is locked out on installed systems via the 'removeuser'
+# Calamares module. Passwordless sudo is LIVE-ONLY and not propagated to installed systems.
+set -euo pipefail
+
+echo "[DainRaku] Configuring live-session user account..."
+
+# Create the 'pentester' user for the live session only
+if ! id -u pentester &>/dev/null; then
+    useradd -m -s /bin/zsh -G sudo,adm,cdrom,floppy,audio,dip,video,plugdev,netdev,bluetooth,scanner,lpadmin pentester
+    echo "pentester:pentester" | chpasswd
+    echo "[DainRaku] Live session user 'pentester' created with password 'pentester'."
+    echo "[DainRaku] This account is removed during installation — Calamares creates your real account."
+fi
+
+# Force password change on first post-install login (belt-and-suspenders for edge cases)
+chage -d 0 pentester 2>/dev/null || true
+
+# Add pentester to the wireshark group for non-root packet capture
+groupadd -f wireshark
+usermod -aG wireshark pentester
+usermod -aG wireshark root
+
+# Passwordless sudo for the LIVE SESSION user only.
+# This file is removed by the 'removeuser' Calamares module on installation.
+cat > /etc/sudoers.d/pentester-live << 'EOF'
+# DainRaku OS: LIVE SESSION ONLY — passwordless sudo for convenience
+# This file does NOT persist to the installed system.
+pentester ALL=(ALL) NOPASSWD: ALL
+EOF
+chmod 0440 /etc/sudoers.d/pentester-live
+
+# Root password for live session (not set on installed system — Calamares handles that)
+echo "root:toor" | chpasswd
+echo "[DainRaku] Live session root password set to 'toor' (standard for pentesting live ISOs)."
+echo "[DainRaku] Installed systems use the password you choose in Calamares."
+
+echo "[DainRaku] Live-session user configuration complete."

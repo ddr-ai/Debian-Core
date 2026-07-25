@@ -1,0 +1,26 @@
+#!/bin/bash
+# DainRaku OS — Import third-party APT signing keys
+# This hook runs in the 'normal' hooks stage, which is invoked during lb chroot
+# before package lists are resolved. Keys imported here are available for
+# the Kali and Liquorix archive sources placed in config/archives/.
+set -euo pipefail
+
+echo "[DainRaku] Importing third-party APT signing keys..."
+
+# Ensure apt-transport-https and curl are available (bootstrapped by debootstrap)
+apt-get install -y --no-install-recommends curl ca-certificates gnupg 2>/dev/null || true
+
+# ── Kali Linux signing key ────────────────────────────────────────────────────
+curl -fsSL https://archive.kali.org/archive-key.asc \
+    | gpg --dearmor -o /usr/share/keyrings/kali-archive-keyring.gpg
+echo "[DainRaku] Kali archive key imported."
+
+# ── Liquorix kernel signing key ───────────────────────────────────────────────
+curl -fsSL 'https://liquorix.net/liquorix-keyring.gpg' \
+    -o /usr/share/keyrings/liquorix-keyring.gpg
+echo "[DainRaku] Liquorix key imported."
+
+# Run apt-get update so the new sources are available immediately
+apt-get update -y
+
+echo "[DainRaku] APT key import complete."

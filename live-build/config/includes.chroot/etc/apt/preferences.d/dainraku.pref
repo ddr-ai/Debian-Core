@@ -1,0 +1,43 @@
+# DainRaku OS — APT Pin Preferences
+# Controls package priority across all configured repositories.
+
+# ── Debian Stable: highest default priority ───────────────────────────────────
+Package: *
+Pin: release a=bookworm
+Pin-Priority: 500
+
+Package: *
+Pin: release a=bookworm-security
+Pin-Priority: 500
+
+Package: *
+Pin: release a=bookworm-updates
+Pin-Priority: 500
+
+# ── Debian Testing: inert until enabled via dainraku-switch-repos ─────────────
+Package: *
+Pin: release a=testing
+Pin-Priority: 1
+
+# ── Debian Sid: inert until enabled via dainraku-switch-repos ────────────────
+Package: *
+Pin: release a=sid
+Pin-Priority: 1
+
+# ── Debian Experimental: always opt-in only ───────────────────────────────────
+Package: *
+Pin: release a=experimental
+Pin-Priority: -1
+
+# ── Kali mirror: lower than Debian stable ────────────────────────────────────
+Package: *
+Pin: release o=Kali
+Pin-Priority: 100
+
+# ── Block all games permanently ───────────────────────────────────────────────
+Package: gnome-games kde-games supertux supertuxkart openarena tuxracer
+Package: extremetuxracer 0ad freeciv wesnoth nethack minetest dosbox scummvm
+Package: frozen-bubble pingus bsdgames moon-buggy pacman4console ninvaders
+Package: steam steam-installer lutris wine playonlinux
+Pin: release *
+Pin-Priority: -1

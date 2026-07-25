@@ -1,0 +1,98 @@
+# DainRaku OS — Digital Forensics & Reverse Engineering Package List
+# Sources: Debian stable + Kali Linux APT mirror overlay
+#
+# NOTE: Tools marked [apt] are installable from Debian/Kali repos.
+# Others require manual installation (noted inline).
+
+# ── Forensics Platforms ───────────────────────────────────────────────────────
+autopsy              # [apt] Kali: Autopsy forensic browser
+sleuthkit            # [apt] Debian: The Sleuth Kit disk forensics
+
+# ── Memory Forensics ─────────────────────────────────────────────────────────
+volatility3          # [apt] Kali: memory forensics framework (Python 3)
+# volatility2: pip3 install volatility — not in apt
+# rekall: abandoned upstream; use volatility3 instead
+# lime-forensics: kernel module — compile via DKMS on target machine
+# avml: Rust binary release — https://github.com/microsoft/avml/releases
+
+# ── Disk Imaging ─────────────────────────────────────────────────────────────
+dcfldd               # [apt] Debian: enhanced dd for forensics
+dc3dd                # [apt] Debian: DoD 5220.22-M wiping/imaging
+guymager             # [apt] Debian: forensic imaging GUI
+ddrescue             # [apt] Debian: GNU ddrescue
+ewf-tools            # [apt] Debian: Expert Witness Format tools
+afflib-tools         # [apt] Debian: AFF disk image tools
+
+# ── File Recovery & Carving ───────────────────────────────────────────────────
+testdisk             # [apt] Debian: recover lost partitions + PhotoRec file carver
+# photorec: included in the testdisk package above
+foremost             # [apt] Debian: file carving tool
+scalpel              # [apt] Debian: fast file carver
+extundelete          # [apt] Debian: ext3/ext4 file recovery
+ext4magic            # [apt] Debian: ext3/ext4 magic file recovery
+
+# ── Firmware Analysis ─────────────────────────────────────────────────────────
+binwalk              # [apt] Kali: firmware analysis and extraction
+# firmware-mod-kit: https://github.com/rampageX/firmware-mod-kit (compile from source)
+
+# ── Reverse Engineering Frameworks ────────────────────────────────────────────
+radare2              # [apt] Debian: reverse engineering framework
+rizin                # [apt] Kali: rizin (radare2 fork)
+cutter               # [apt] Kali: Cutter GUI for radare2/rizin
+ghidra               # [apt] Kali: NSA software RE suite
+
+# ── Debuggers ────────────────────────────────────────────────────────────────
+gdb                  # [apt] Debian: GNU debugger
+gdb-multiarch        # [apt] Debian: GDB for cross-architecture debugging
+edb-debugger         # [apt] Debian: EDB debugger (OllyDbg-style)
+valgrind             # [apt] Debian: memory error detector
+# pwndbg: pip3 install pwndbg — GDB plugin, not an apt package
+# gef: pip3 install gef — GDB plugin, not an apt package
+
+# ── Binary Analysis ───────────────────────────────────────────────────────────
+binutils             # [apt] Debian: provides nm, objdump, readelf, strings, etc.
+# 'strings' is a command provided by binutils above — not a separate package
+checksec             # [apt] Debian/Kali: binary security property checker
+patchelf             # [apt] Debian: ELF binary patcher
+elfutils             # [apt] Debian: ELF utilities
+python3-yara         # [apt] Debian: YARA Python bindings
+yara                 # [apt] Debian: YARA pattern matching
+# capa: https://github.com/mandiant/capa/releases (binary release, not in apt)
+# floss: https://github.com/mandiant/flare-floss/releases (binary release, not in apt)
+
+# ── Android Reverse Engineering ───────────────────────────────────────────────
+apktool              # [apt] Kali: APK reverse engineering tool
+jadx                 # [apt] Kali: Dex-to-Java decompiler
+# dex2jar: https://github.com/pxb1988/dex2jar (binary release, not in Debian apt)
+
+# ── Strace / Ltrace ───────────────────────────────────────────────────────────
+strace               # [apt] Debian: system call tracer
+ltrace               # [apt] Debian: library call tracer
+
+# ── File Identification ───────────────────────────────────────────────────────
+file                 # [apt] Debian: file type identification
+xxd                  # [apt] Debian: hex dump tool
+hexedit              # [apt] Debian: hex editor
+libimage-exiftool-perl # [apt] Debian: ExifTool — metadata extractor
+# magika: pip3 install magika — Google AI file type detection; not in Debian apt yet
+
+# ── Malware Analysis ─────────────────────────────────────────────────────────
+clamav               # [apt] Debian: open-source antivirus
+mat2                 # [apt] Debian: metadata anonymization toolkit
+
+# ── Network Forensics ─────────────────────────────────────────────────────────
+tcpdump              # [apt] Debian: command-line packet capture
+wireshark            # [apt] Debian: network protocol analyzer
+tshark               # [apt] Debian: terminal Wireshark (also provides capinfos/editcap/mergecap)
+# capinfos, editcap, mergecap: commands provided by the wireshark/tshark package
+tcpflow              # [apt] Debian: TCP session reconstruction
+tcpreplay            # [apt] Debian: replay network traffic (also provides tcprewrite)
+ngrep                # [apt] Debian: network grep
+# tcpxtract: not in Debian/Kali apt repos; use tcpflow or Wireshark instead
+
+# ── Steganography ────────────────────────────────────────────────────────────
+steghide             # [apt] Debian: steganography hide/extract
+outguess             # [apt] Debian: universal steganography
+# stegseek: https://github.com/RickdeJager/stegseek/releases (deb release, not in Debian repo)
+# stegcracker: pip3 install stegcracker — not in apt
+# zsteg: gem install zsteg — Ruby gem, not an apt package

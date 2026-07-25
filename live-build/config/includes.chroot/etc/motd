@@ -1,0 +1,21 @@
+
+  ██████╗  █████╗ ██╗███╗   ██╗██████╗  █████╗ ██╗  ██╗██╗   ██╗
+  ██╔══██╗██╔══██╗██║████╗  ██║██╔══██╗██╔══██╗██║ ██╔╝██║   ██║
+  ██║  ██║███████║██║██╔██╗ ██║██████╔╝███████║█████╔╝ ██║   ██║
+  ██║  ██║██╔══██║██║██║╚██╗██║██╔══██╗██╔══██║██╔═██╗ ██║   ██║
+  ██████╔╝██║  ██║██║██║ ╚████║██║  ██║██║  ██║██║  ██╗╚██████╔╝
+  ╚═════╝ ╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝
+                             OS  v1.0
+
+  Kernel   : Liquorix (low-latency, performance-optimized)
+  Desktop  : KDE Plasma 6
+  Filesystem: BTRFS (zstd, noatime, subvolumes, snapper)
+  Tools    : 545+ security tools across 11 categories
+  Terminal : Ghostty | Browser: BrowserOS
+
+  Default credentials → user: pentester / pass: pentester
+  WARNING: Change your password immediately after first login!
+
+  Run 'dainraku-hwdetect' to detect and install hardware drivers.
+  Run 'dainraku-switch-repos' to switch between stable/testing/sid.
+

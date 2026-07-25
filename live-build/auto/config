@@ -1,0 +1,37 @@
+#!/bin/sh
+# DainRaku OS — live-build auto/config
+# Runs 'lb config' with all DainRaku OS defaults.
+# Usage: sudo lb config  (called automatically by auto/build)
+set -e
+
+lb config noauto \
+    --apt-indices false \
+    --apt-recommends false \
+    --apt-secure true \
+    --archive-areas "main contrib non-free non-free-firmware" \
+    --architectures amd64 \
+    --binary-images iso-hybrid \
+    --bootappend-live "boot=live components hostname=dainrakuos username=pentester noeject quiet splash plymouth.ignore-serial-consoles" \
+    --bootappend-live-failsafe "boot=live components hostname=dainrakuos username=pentester noeject memtest noapic noapm nodma nomce nolapic nomodeset nosmp nosplash vga=normal" \
+    --chroot-filesystem squashfs \
+    --color \
+    --compression xz \
+    --debootstrap-options "--include=ca-certificates,curl,apt-transport-https,gnupg" \
+    --distribution bookworm \
+    --firmware-chroot true \
+    --firmware-binary true \
+    --image-name "dainraku-os" \
+    --iso-application "DainRaku OS" \
+    --iso-preparer "DainRaku OS Project" \
+    --iso-publisher "DainRaku OS Project <build@dainraku.os>" \
+    --iso-volume "DainRakuOS" \
+    --memtest none \
+    --mode debian \
+    --parent-mirror-bootstrap "http://deb.debian.org/debian/" \
+    --parent-mirror-chroot "http://deb.debian.org/debian/" \
+    --parent-mirror-binary "http://deb.debian.org/debian/" \
+    --security true \
+    --updates true \
+    --uefi-secure-boot enable \
+    --win32-loader false \
+    "${@}"

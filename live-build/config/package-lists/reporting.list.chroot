@@ -1,0 +1,58 @@
+# DainRaku OS — Reporting & Documentation Package List
+# Sources: Debian stable + Kali Linux APT mirror overlay
+
+# ── Pentest Reporting Platforms ───────────────────────────────────────────────
+dradis
+faraday
+serpico
+pwndoc
+ghostwriter
+defectdojo
+archerysec
+
+# ── Office & Document Creation ───────────────────────────────────────────────
+libreoffice
+libreoffice-writer
+libreoffice-calc
+libreoffice-impress
+libreoffice-draw
+pandoc
+texlive-latex-base
+texlive-fonts-recommended
+
+# ── Note-taking ──────────────────────────────────────────────────────────────
+cherrytree
+obsidian
+zettlr
+logseq
+
+# ── Password Managers ─────────────────────────────────────────────────────────
+keepassxc
+pass
+gopass
+
+# ── Full Disk Encryption ─────────────────────────────────────────────────────
+veracrypt
+
+# ── Crypto Utilities ─────────────────────────────────────────────────────────
+openssl
+gnupg
+gpg
+
+# ── Screenshotting & Screen Capture ──────────────────────────────────────────
+flameshot
+spectacle
+peek
+kazam
+
+# ── PDF Tools ────────────────────────────────────────────────────────────────
+okular
+poppler-utils
+pdftk-java
+ghostscript
+
+# ── Diagram & Mind Mapping ────────────────────────────────────────────────────
+# drawio — install the .deb from https://github.com/jgraph/drawio-desktop/releases
+# xmind — proprietary, install from https://www.xmind.net/download/linux/
+dia
+freemind
