@@ -1,3 +1,15 @@
-<svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect width="180" height="180" rx="36" fill="#FF3C00"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" fill="none">
+  <!-- DainRaku OS favicon — dark bg with neon cyan "D" mark -->
+  <rect width="180" height="180" rx="24" fill="#0b0e14"/>
+  <!-- Angular stylized D letterform -->
+  <polygon points="54,36 54,144 90,144 118,128 130,100 130,80 118,52 90,36"
+           fill="none" stroke="#00f0ff" stroke-width="8" stroke-linejoin="round"/>
+  <!-- Inner cutout bar -->
+  <line x1="54" y1="90" x2="108" y2="90" stroke="#00f0ff" stroke-width="5" opacity="0.6"/>
+  <!-- Corner accent dots -->
+  <circle cx="54" cy="36" r="4" fill="#00f0ff"/>
+  <circle cx="54" cy="144" r="4" fill="#00f0ff"/>
+  <!-- Glow filter applied via opacity layers -->
+  <polygon points="54,36 54,144 90,144 118,128 130,100 130,80 118,52 90,36"
+           fill="none" stroke="#00f0ff" stroke-width="16" stroke-linejoin="round" opacity="0.12"/>
 </svg>

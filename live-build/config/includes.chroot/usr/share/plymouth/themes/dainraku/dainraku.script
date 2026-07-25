@@ -27,6 +27,11 @@ fun paint_background() {
     Window.SetBackgroundBottomColor(0.02, 0.03, 0.04);
 }
 
+// ── Logo Image ────────────────────────────────────────────────────────────────
+logo_image   = Image("logo.png");
+logo_scaled  = logo_image.Scale(96, 96);
+logo_sprite  = Sprite(logo_scaled);
+
 // ── Title Text ────────────────────────────────────────────────────────────────
 title_image  = Image.Text("DainRaku", 1.0, 1.0, 1.0, 1, "JetBrains Mono Bold 32");
 sub_image    = Image.Text("OS", neon_r, neon_g, neon_b, 1, "JetBrains Mono Light 24");
@@ -63,6 +68,10 @@ current_progress = 0.0;
 fun refresh_callback() {
     // Fade in the logo
     alpha = Math.Min(1.0, Plymouth.GetBootProgress() * 3.0 + 0.1);
+
+    // Logo image — centered above the text
+    logo_sprite.SetPosition(cx - 48, cy - 130, 10);
+    logo_sprite.SetOpacity(alpha);
 
     title_sprite.SetPosition(cx - title_image.GetWidth() / 2 - sub_image.GetWidth() / 2 - 8, cy - title_image.GetHeight() / 2, 10);
     title_sprite.SetOpacity(alpha);
