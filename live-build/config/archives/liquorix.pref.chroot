@@ -1,0 +1,8 @@
+# DainRaku OS — pin the Liquorix repository LOW.
+#
+# Liquorix only exists to supply its custom kernel packages (linux-image-liquorix-*
+# and helpers). Pinning it low prevents it from replacing unrelated Debian
+# bookworm libraries and causing dependency conflicts in the base system.
+Package: *
+Pin: origin liquorix.net
+Pin-Priority: 100
