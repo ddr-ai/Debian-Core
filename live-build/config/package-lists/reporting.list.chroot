@@ -4,11 +4,8 @@
 # ── Pentest Reporting Platforms ───────────────────────────────────────────────
 dradis
 faraday
-serpico
-pwndoc
 ghostwriter
 defectdojo
-archerysec
 
 # ── Office & Document Creation ───────────────────────────────────────────────
 libreoffice
@@ -23,8 +20,6 @@ texlive-fonts-recommended
 # ── Note-taking ──────────────────────────────────────────────────────────────
 cherrytree
 obsidian
-zettlr
-logseq
 
 # ── Password Managers ─────────────────────────────────────────────────────────
 keepassxc
@@ -32,7 +27,6 @@ pass
 gopass
 
 # ── Full Disk Encryption ─────────────────────────────────────────────────────
-veracrypt
 
 # ── Crypto Utilities ─────────────────────────────────────────────────────────
 openssl
@@ -41,7 +35,6 @@ gpg
 
 # ── Screenshotting & Screen Capture ──────────────────────────────────────────
 flameshot
-spectacle
 peek
 kazam
 
@@ -55,4 +48,3 @@ ghostscript
 # drawio — install the .deb from https://github.com/jgraph/drawio-desktop/releases
 # xmind — proprietary, install from https://www.xmind.net/download/linux/
 dia
-freemind

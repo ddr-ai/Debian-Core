@@ -6,13 +6,11 @@ git
 git-lfs
 git-secret
 git-crypt
-gitui
 lazygit
 
 # ── Secret Detection ──────────────────────────────────────────────────────────
 gitleaks
 trufflehog
-detect-secrets
 
 # ── Python ────────────────────────────────────────────────────────────────────
 python3
@@ -99,7 +97,6 @@ bat
 fd-find
 ripgrep
 jq
-python3-yq
 httpie
 
 # ── Monitoring & Diagnostics ─────────────────────────────────────────────────

@@ -9,7 +9,6 @@ autopsy
 sleuthkit
 
 # ── Memory Forensics ─────────────────────────────────────────────────────────
-volatility3
 # volatility2: pip3 install volatility — not in apt
 # rekall: abandoned upstream; use volatility3 instead
 # lime-forensics: kernel module — compile via DKMS on target machine
@@ -38,7 +37,6 @@ binwalk
 # ── Reverse Engineering Frameworks ────────────────────────────────────────────
 radare2
 rizin
-cutter
 ghidra
 
 # ── Debuggers ────────────────────────────────────────────────────────────────

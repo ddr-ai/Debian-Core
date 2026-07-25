@@ -44,8 +44,6 @@ httrack
 
 # ── Username & Email OSINT ────────────────────────────────────────────────────
 sherlock
-maigret
-holehe
 h8mail
 emailharvester
 
@@ -59,7 +57,6 @@ mat2
 # ── HTTP Probing & Discovery ──────────────────────────────────────────────────
 httpx-toolkit
 nuclei
-katana
 hakrawler
 
 # ── Network Diagnostics ───────────────────────────────────────────────────────
@@ -71,24 +68,13 @@ hping3
 p0f
 dmitry
 amap
-xprobe2
 
 # ── Passive Reconnaissance ────────────────────────────────────────────────────
-shodan
-censys-cli
-waybackurls
-gau
-unfurl
-gf
 
 # ── Geolocation & Social ──────────────────────────────────────────────────────
-creepy
-osintgram
-tinfoleak
 
 # ── Certificate Transparency ─────────────────────────────────────────────────
 certspotter
-crtsh-query
 
 # ── Scapy & Packet Tools ──────────────────────────────────────────────────────
 python3-scapy

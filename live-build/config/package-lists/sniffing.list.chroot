@@ -23,7 +23,6 @@ mitm6
 
 # ── DNS Spoofing ──────────────────────────────────────────────────────────────
 dnschef
-dnsspoof
 # fakedns: pip3 install fakedns — not in apt
 
 # ── ARP Spoofing ──────────────────────────────────────────────────────────────
@@ -33,7 +32,6 @@ arpwatch
 # ── Packet Crafting & Replay ─────────────────────────────────────────────────
 python3-scapy
 hping3
-nemesis
 yersinia
 tcpreplay
 netsed
