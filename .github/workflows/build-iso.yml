@@ -1,0 +1,188 @@
+name: Build & Publish DainRaku OS ISO
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g. v1.0.0)'
+        required: true
+        default: 'v1.0.0-dev'
+      prerelease:
+        description: 'Mark as pre-release'
+        required: false
+        default: 'true'
+        type: boolean
+
+permissions:
+  contents: write  # required to create releases & upload assets
+
+jobs:
+  build:
+    name: Build ISO
+    runs-on: ubuntu-22.04
+    timeout-minutes: 120
+
+    steps:
+      # ── Free up extra disk space ────────────────────────────────────────────
+      # GitHub-hosted runners have ~14 GB free by default; lb build needs ~30 GB.
+      - name: Free up disk space
+        run: |
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/share/boost
+          sudo apt-get clean
+          df -h
+
+      # ── Checkout ────────────────────────────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── Install live-build and deps ─────────────────────────────────────────
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y \
+            live-build \
+            debootstrap \
+            squashfs-tools \
+            xorriso \
+            grub-pc-bin \
+            grub-efi-amd64-bin \
+            mtools \
+            curl \
+            gpg \
+            apt-transport-https \
+            ca-certificates
+
+      # ── Determine version string ────────────────────────────────────────────
+      - name: Set release version
+        id: version
+        run: |
+          if [[ "${{ github.event_name }}" == "push" ]]; then
+            VERSION="${GITHUB_REF_NAME}"
+          else
+            VERSION="${{ github.event.inputs.version }}"
+          fi
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "Building version: ${VERSION}"
+
+      # ── Run lb config ───────────────────────────────────────────────────────
+      - name: Configure live-build
+        run: |
+          cd live-build
+          sudo bash auto/config
+
+      # ── Make hooks executable ────────────────────────────────────────────────
+      - name: Set hook permissions
+        run: |
+          sudo chmod +x live-build/config/hooks/live/*.hook.chroot 2>/dev/null || true
+          sudo chmod +x live-build/config/hooks/normal/*.hook.chroot 2>/dev/null || true
+          sudo chmod +x live-build/config/includes.chroot/usr/local/bin/dainraku-* 2>/dev/null || true
+
+      # ── Build the ISO ────────────────────────────────────────────────────────
+      - name: Run lb build
+        run: |
+          cd live-build
+          sudo lb build 2>&1 | tee ../build.log
+
+      # ── Locate ISO & generate checksums ──────────────────────────────────────
+      - name: Locate ISO and compute checksums
+        id: iso
+        run: |
+          ISO=$(find live-build -maxdepth 1 -name "*.iso" | head -1)
+          if [[ -z "$ISO" ]]; then
+            echo "ERROR: No ISO found after build. Check build.log." >&2
+            exit 1
+          fi
+          VERSION="${{ steps.version.outputs.version }}"
+          DEST="dainraku-os-${VERSION}-amd64.iso"
+          cp "$ISO" "$DEST"
+
+          sha256sum "$DEST" > "${DEST}.sha256"
+          MD5SUM=$(md5sum "$DEST" | awk '{print $1}')
+          SHA256=$(sha256sum "$DEST" | awk '{print $1}')
+          SIZE=$(du -sh "$DEST" | awk '{print $1}')
+
+          echo "iso_path=${DEST}" >> "$GITHUB_OUTPUT"
+          echo "sha256_path=${DEST}.sha256" >> "$GITHUB_OUTPUT"
+          echo "sha256=${SHA256}" >> "$GITHUB_OUTPUT"
+          echo "md5=${MD5SUM}" >> "$GITHUB_OUTPUT"
+          echo "size=${SIZE}" >> "$GITHUB_OUTPUT"
+          echo ""
+          echo "ISO: ${DEST}"
+          echo "SHA256: ${SHA256}"
+          echo "Size: ${SIZE}"
+
+      # ── Upload build log as artifact (always, even on failure) ──────────────
+      - name: Upload build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log-${{ steps.version.outputs.version }}
+          path: build.log
+          retention-days: 30
+
+      # ── Determine release type ───────────────────────────────────────────────
+      - name: Determine pre-release flag
+        id: release_type
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            PRERELEASE="${{ github.event.inputs.prerelease }}"
+          elif [[ "$VERSION" == *"-"* ]]; then
+            PRERELEASE="true"   # versions like v1.0.0-beta are pre-releases
+          else
+            PRERELEASE="false"
+          fi
+          echo "prerelease=${PRERELEASE}" >> "$GITHUB_OUTPUT"
+
+      # ── Create GitHub Release ────────────────────────────────────────────────
+      - name: Create GitHub Release
+        id: release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.version }}
+          name: "DainRaku OS ${{ steps.version.outputs.version }}"
+          prerelease: ${{ steps.release_type.outputs.prerelease }}
+          body: |
+            ## DainRaku OS ${{ steps.version.outputs.version }}
+
+            A precision-engineered penetration testing distribution built on Debian Bookworm,
+            powered by the Liquorix kernel and armed with 300+ security tools.
+
+            ### Download
+
+            | File | Size | SHA256 |
+            |------|------|--------|
+            | `dainraku-os-${{ steps.version.outputs.version }}-amd64.iso` | ${{ steps.iso.outputs.size }} | `${{ steps.iso.outputs.sha256 }}` |
+
+            ### Verify integrity
+
+            ```bash
+            sha256sum -c dainraku-os-${{ steps.version.outputs.version }}-amd64.iso.sha256
+            ```
+
+            ### Write to USB
+
+            ```bash
+            # Linux / macOS
+            sudo dd if=dainraku-os-${{ steps.version.outputs.version }}-amd64.iso \
+                    of=/dev/sdX bs=4M status=progress oflag=sync
+
+            # Or use Balena Etcher: https://etcher.balena.io
+            ```
+
+            ### Changelog
+            See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) for full details.
+
+            ---
+            Built automatically by GitHub Actions from commit `${{ github.sha }}`.
+          files: |
+            ${{ steps.iso.outputs.iso_path }}
+            ${{ steps.iso.outputs.sha256_path }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

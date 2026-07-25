@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'wouter';
 import { motion } from 'framer-motion';
-import { Terminal, Shield, Wrench, HardDrive } from 'lucide-react';
+import { Terminal, Shield, Wrench, HardDrive, Download } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function Navbar() {
@@ -11,6 +11,7 @@ export default function Navbar() {
     { href: '/tools', label: 'ARSENAL', icon: Wrench },
     { href: '/build', label: 'BUILD DOCS', icon: Terminal },
     { href: '/iso-builder', label: 'ISO BUILDER', icon: HardDrive },
+    { href: '/download', label: 'DOWNLOAD', icon: Download },
   ];
 
   return (

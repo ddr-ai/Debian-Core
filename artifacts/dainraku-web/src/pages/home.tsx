@@ -1,6 +1,6 @@
 import { Link } from 'wouter';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { Terminal, Shield, Cpu, Network, Zap, GitBranch, ArrowRight, Activity, Command, HardDrive } from 'lucide-react';
+import { Terminal, Shield, Cpu, Network, Zap, GitBranch, ArrowRight, Activity, Command, HardDrive, Download } from 'lucide-react';
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
@@ -46,17 +46,17 @@ export default function Home() {
             </motion.p>
             
             <motion.div variants={fadeIn} className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link href="/iso-builder">
+              <Link href="/download">
                 <div className="px-8 py-4 bg-primary text-primary-foreground font-mono font-bold tracking-widest hover:bg-primary/90 transition-colors flex items-center gap-2 group w-full sm:w-auto justify-center relative overflow-hidden">
                   <span className="relative z-10 flex items-center gap-2">
-                    CONFIGURE ISO <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    <Download className="w-4 h-4" /> DOWNLOAD ISO
                   </span>
                   <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
                 </div>
               </Link>
-              <Link href="/tools">
-                <div className="px-8 py-4 bg-transparent border border-primary/50 text-primary font-mono font-bold tracking-widest hover:bg-primary/10 transition-colors w-full sm:w-auto text-center glow-border-hover">
-                  BROWSE ARSENAL
+              <Link href="/iso-builder">
+                <div className="px-8 py-4 bg-transparent border border-primary/50 text-primary font-mono font-bold tracking-widest hover:bg-primary/10 transition-colors w-full sm:w-auto text-center glow-border-hover flex items-center gap-2 justify-center">
+                  CONFIGURE ISO <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </div>
               </Link>
             </motion.div>
@@ -227,15 +227,20 @@ export default function Home() {
           >
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary to-transparent"></div>
             <h2 className="text-3xl md:text-4xl font-display font-bold uppercase mb-4">Initialize Deployment</h2>
-            <p className="text-muted-foreground font-mono mb-8">Generate your custom package list or read the compilation manual.</p>
+            <p className="text-muted-foreground font-mono mb-8">Download a pre-built ISO, configure a custom package list, or read the compilation manual.</p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
-               <Link href="/iso-builder">
-                <div className="px-6 py-3 bg-primary text-primary-foreground font-mono font-bold tracking-wider hover:bg-primary/90 transition-colors cursor-pointer w-full sm:w-auto">
-                  START BUILDER
+              <Link href="/download">
+                <div className="px-6 py-3 bg-primary text-primary-foreground font-mono font-bold tracking-wider hover:bg-primary/90 transition-colors cursor-pointer w-full sm:w-auto flex items-center gap-2 justify-center">
+                  <Download className="w-4 h-4" /> DOWNLOAD ISO
+                </div>
+              </Link>
+              <Link href="/iso-builder">
+                <div className="px-6 py-3 border border-primary/50 text-primary font-mono tracking-wider hover:bg-primary/10 transition-colors cursor-pointer w-full sm:w-auto">
+                  CONFIGURE ISO
                 </div>
               </Link>
               <Link href="/build">
-                <div className="px-6 py-3 border border-primary/50 text-primary font-mono tracking-wider hover:bg-primary/10 transition-colors cursor-pointer w-full sm:w-auto">
+                <div className="px-6 py-3 border border-primary/20 text-muted-foreground font-mono tracking-wider hover:bg-primary/5 transition-colors cursor-pointer w-full sm:w-auto">
                   READ DOCS
                 </div>
               </Link>

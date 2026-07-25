@@ -10,6 +10,7 @@ import Home from '@/pages/home';
 import Tools from '@/pages/tools';
 import BuildGuide from '@/pages/build';
 import IsoBuilder from '@/pages/iso-builder';
+import DownloadPage from '@/pages/download';
 import Navbar from '@/components/navbar';
 
 const queryClient = new QueryClient();
@@ -25,6 +26,7 @@ function Router() {
           <Route path="/tools" component={Tools} />
           <Route path="/build" component={BuildGuide} />
           <Route path="/iso-builder" component={IsoBuilder} />
+          <Route path="/download" component={DownloadPage} />
           <Route component={NotFound} />
         </Switch>
       </main>
