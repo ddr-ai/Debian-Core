@@ -72,9 +72,25 @@ jobs:
         id: timer
         run: echo "start=$(date +%s)" >> "$GITHUB_OUTPUT"
 
+      # ── Cache host apt packages (build dependencies) ────────────────────────
+      # Speeds up the "Install build dependencies" step. Keyed on the workflow
+      # file so it refreshes if the dependency list changes.
+      - name: Cache apt package archives
+        uses: actions/cache@v4
+        with:
+          path: /var/cache/apt/archives
+          key: apt-archives-${{ runner.os }}-${{ hashFiles('.github/workflows/build-iso.yml') }}
+          restore-keys: |
+            apt-archives-${{ runner.os }}-
+
       # ── Install live-build and deps ─────────────────────────────────────────
       - name: Install build dependencies
         run: |
+          # Keep downloaded .deb files so they can be cached between runs
+          # (GitHub runners delete them after install by default).
+          echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' | \
+            sudo tee /etc/apt/apt.conf.d/keep-cache > /dev/null
+          sudo rm -f /var/cache/apt/archives/lock
           sudo apt-get update -q
           sudo apt-get install -y \
             live-build \
@@ -113,26 +129,18 @@ jobs:
           PACKAGES='${{ github.event.inputs.packages }}'
           if [[ -z "$PACKAGES" || "$PACKAGES" == "[]" ]]; then
             echo "No custom packages requested — using default package lists."
+          elif ! echo "$PACKAGES" | jq -e 'type == "array" and length > 0' > /dev/null 2>&1; then
+            echo "Warning: could not parse packages JSON (or empty list) — skipping custom list." >&2
           else
-            echo "$PACKAGES" | python3 -c "
-import sys, json, os
-try:
-    pkgs = json.load(sys.stdin)
-except Exception as e:
-    print(f'Warning: could not parse packages JSON: {e}', file=sys.stderr)
-    sys.exit(0)
-if not pkgs:
-    print('Empty package list — skipping custom list.')
-    sys.exit(0)
-out_dir = 'live-build/config/package-lists'
-os.makedirs(out_dir, exist_ok=True)
-out_path = os.path.join(out_dir, 'custom-web.list.chroot')
-with open(out_path, 'w') as f:
-    f.write('# Custom packages requested via the DainRaku web ISO builder\n')
-    for p in sorted(set(pkgs)):
-        f.write(p + '\n')
-print(f'Wrote {len(pkgs)} custom packages to {out_path}')
-"
+            OUT_DIR="live-build/config/package-lists"
+            OUT_PATH="${OUT_DIR}/custom-web.list.chroot"
+            mkdir -p "$OUT_DIR"
+            {
+              echo '# Custom packages requested via the DainRaku web ISO builder'
+              echo "$PACKAGES" | jq -r '.[] | tostring' | sort -u
+            } > "$OUT_PATH"
+            COUNT=$(( $(wc -l < "$OUT_PATH") - 1 ))
+            echo "Wrote ${COUNT} custom packages to ${OUT_PATH}"
           fi
 
       # ── Make hooks executable ────────────────────────────────────────────────
@@ -142,11 +150,35 @@ print(f'Wrote {len(pkgs)} custom packages to {out_path}')
           sudo chmod +x live-build/config/hooks/normal/*.hook.chroot 2>/dev/null || true
           sudo chmod +x live-build/config/includes.chroot/usr/local/bin/dainraku-* 2>/dev/null || true
 
+      # ── Cache live-build downloaded packages ────────────────────────────────
+      # live-build stores downloaded .deb packages and the bootstrap under
+      # live-build/cache. Keyed on the package lists so the cache invalidates
+      # whenever the package selection changes; restore-keys still allow a
+      # partial hit (apt only re-downloads what changed).
+      - name: Cache live-build package downloads
+        uses: actions/cache@v4
+        with:
+          path: live-build/cache
+          key: lb-cache-${{ runner.os }}-${{ hashFiles('live-build/config/package-lists/**', 'live-build/auto/config') }}
+          restore-keys: |
+            lb-cache-${{ runner.os }}-
+
       # ── Build the ISO ────────────────────────────────────────────────────────
       - name: Run lb build
         run: |
           cd live-build
           sudo lb build 2>&1 | tee ../build.log
+
+      # ── Fix cache dir ownership so the post-job cache save can read it ───────
+      # lb build runs under sudo, leaving live-build/cache root-owned; the
+      # actions/cache post step runs as the runner user and needs read access.
+      - name: Fix live-build cache permissions
+        if: always()
+        run: |
+          if [[ -d live-build/cache ]]; then
+            sudo chown -R "$(id -u):$(id -g)" live-build/cache
+          fi
+          sudo chown -R "$(id -u):$(id -g)" /var/cache/apt/archives 2>/dev/null || true
 
       # ── Locate ISO & generate checksums ──────────────────────────────────────
       - name: Locate ISO and compute checksums
