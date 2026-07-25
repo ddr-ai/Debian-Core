@@ -1,0 +1,131 @@
+#!/bin/bash
+# DainRaku OS Hook: Install Calamares and configure DainRaku branding
+# Ensures Calamares is installed, the dainraku branding package is active,
+# and all module/settings configs are in place.
+set -euo pipefail
+
+echo "[DainRaku] Configuring Calamares installer branding..."
+
+# ── Install Calamares ────────────────────────────────────────────────────────
+apt-get install -y \
+    calamares \
+    calamares-settings-debian \
+    qml-module-qtquick2 \
+    qml-module-qtquick-controls2 \
+    qml-module-qtquick-layouts \
+    qml-module-calamares-slideshow \
+    || true
+
+# ── Copy DainRaku settings and module configs ────────────────────────────────
+CALAMARES_ETC=/etc/calamares
+CALAMARES_SHARE=/usr/share/calamares
+
+mkdir -p "${CALAMARES_ETC}/modules"
+
+# Main settings — sets branding: dainraku
+if [ -f /usr/share/dainraku-build/calamares/settings.conf ]; then
+    cp /usr/share/dainraku-build/calamares/settings.conf "${CALAMARES_ETC}/settings.conf"
+fi
+
+# Module overrides shipped with the live image
+for conf in /usr/share/dainraku-build/calamares/modules/*.conf; do
+    [ -f "$conf" ] || continue
+    cp "$conf" "${CALAMARES_ETC}/modules/"
+done
+
+# ── Verify branding directory exists ────────────────────────────────────────
+BRANDING_DIR="${CALAMARES_SHARE}/branding/dainraku"
+if [ ! -d "${BRANDING_DIR}" ]; then
+    echo "[DainRaku] ERROR: branding directory missing: ${BRANDING_DIR}" >&2
+    exit 1
+fi
+
+echo "[DainRaku] Calamares branding directory: OK"
+ls -la "${BRANDING_DIR}"
+
+# ── Verify branding.desc references dainraku ────────────────────────────────
+if ! grep -q "componentName: dainraku" "${BRANDING_DIR}/branding.desc" 2>/dev/null; then
+    echo "[DainRaku] ERROR: branding.desc missing or has wrong componentName" >&2
+    exit 1
+fi
+
+echo "[DainRaku] branding.desc: OK"
+
+# ── Ensure settings.conf points to dainraku branding ─────────────────────────
+SETTINGS="${CALAMARES_ETC}/settings.conf"
+if [ ! -f "${SETTINGS}" ]; then
+    # Fall back: write minimal settings pointing at dainraku branding
+    mkdir -p "${CALAMARES_ETC}"
+    cat > "${SETTINGS}" << 'SETTINGS_EOF'
+# DainRaku OS — Calamares settings (installed by 11-calamares-branding.hook)
+modules-search: [ local, /usr/lib/calamares/modules ]
+
+sequence:
+  - show:
+    - welcome
+    - locale
+    - keyboard
+    - partition
+    - users
+    - summary
+
+  - exec:
+    - partition
+    - mount
+    - unpackfs
+    - machineid
+    - fstab
+    - locale
+    - keyboard
+    - localecfg
+    - users
+    - networkcfg
+    - hwclock
+    - services-systemd
+    - shellprocess@post-install
+    - grubcfg
+    - bootloader
+    - packages
+    - removeuser
+    - umount
+
+  - show:
+    - finished
+
+branding: dainraku
+prompt-install: false
+dont-chroot: false
+oem-setup: false
+disable-cancel: false
+disable-cancel-during-exec: false
+hide-back-and-next-during-exec: false
+SETTINGS_EOF
+    echo "[DainRaku] Wrote fallback settings.conf"
+fi
+
+# Confirm branding key
+if grep -q "^branding: dainraku" "${SETTINGS}"; then
+    echo "[DainRaku] settings.conf branding=dainraku: OK"
+else
+    # Patch in-place if an existing settings.conf has a different branding value
+    sed -i 's/^branding:.*/branding: dainraku/' "${SETTINGS}"
+    echo "[DainRaku] Patched branding key in ${SETTINGS}"
+fi
+
+# ── Desktop shortcut for the installer ───────────────────────────────────────
+DESKTOP_DIR=/usr/share/applications
+mkdir -p "${DESKTOP_DIR}"
+cat > "${DESKTOP_DIR}/dainraku-installer.desktop" << 'DESKTOP_EOF'
+[Desktop Entry]
+Name=Install DainRaku OS
+GenericName=System Installer
+Comment=Install DainRaku OS to your hard drive
+Exec=calamares
+Icon=/usr/share/calamares/branding/dainraku/dainraku-logo.png
+Terminal=false
+Type=Application
+Categories=System;
+Keywords=install;installer;calamares;dainraku;
+DESKTOP_EOF
+
+echo "[DainRaku] Calamares branding configured successfully."
