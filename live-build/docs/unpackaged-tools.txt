@@ -100,3 +100,4 @@ sslyze
 theharvester
 kismet
 evil-winrm
+wpscan

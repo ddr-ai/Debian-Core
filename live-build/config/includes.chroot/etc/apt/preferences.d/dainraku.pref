@@ -34,6 +34,14 @@ Package: *
 Pin: release o=Kali
 Pin-Priority: 100
 
+# ── Block oracle-instantclient-basic ─────────────────────────────────────────
+# Only the Kali build (libaio1t64 >= 0.3.113-8+kali1) satisfies its dependency,
+# which conflicts with the trixie libaio the rest of the base pins. It is only
+# needed for optional Oracle DB modules, so keep it out of the image.
+Package: oracle-instantclient-basic
+Pin: release *
+Pin-Priority: -1
+
 # ── Block all games permanently ───────────────────────────────────────────────
 Package: gnome-games kde-games supertux supertuxkart openarena tuxracer
 Package: extremetuxracer 0ad freeciv wesnoth nethack minetest dosbox scummvm

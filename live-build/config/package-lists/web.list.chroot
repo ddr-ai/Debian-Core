@@ -21,7 +21,6 @@ crlfuzz
 commix
 
 # ── CMS Scanners ─────────────────────────────────────────────────────────────
-wpscan
 joomscan
 cmseek
 
