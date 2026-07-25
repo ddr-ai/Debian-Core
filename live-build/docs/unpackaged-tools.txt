@@ -90,3 +90,13 @@ wordlistctl
 xprobe2
 zettlr
 zphisher
+
+# ── Removed after trixie rebase (need newer-than-trixie libs, Kali rolling only) ──
+faraday
+hydra-gtk
+rizin
+netexec
+sslyze
+theharvester
+kismet
+evil-winrm

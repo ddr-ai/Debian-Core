@@ -46,6 +46,5 @@ wireless-tools
 iw
 rfkill
 macchanger
-kismet
 linssid
 horst

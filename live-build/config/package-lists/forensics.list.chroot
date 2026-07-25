@@ -36,7 +36,6 @@ binwalk
 
 # ── Reverse Engineering Frameworks ────────────────────────────────────────────
 radare2
-rizin
 ghidra
 
 # ── Debuggers ────────────────────────────────────────────────────────────────

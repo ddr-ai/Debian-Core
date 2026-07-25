@@ -28,7 +28,6 @@ dnschef
 dnscat2
 
 # ── OSINT Frameworks ─────────────────────────────────────────────────────────
-theharvester
 recon-ng
 spiderfoot
 maltego
