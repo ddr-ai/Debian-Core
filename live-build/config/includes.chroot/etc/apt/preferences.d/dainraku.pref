@@ -34,13 +34,17 @@ Package: *
 Pin: release o=Kali
 Pin-Priority: 100
 
-# ── Block oracle-instantclient-basic ─────────────────────────────────────────
-# Only the Kali build (libaio1t64 >= 0.3.113-8+kali1) satisfies its dependency,
-# which conflicts with the trixie libaio the rest of the base pins. It is only
-# needed for optional Oracle DB modules, so keep it out of the image.
-Package: oracle-instantclient-basic
-Pin: release *
-Pin-Priority: -1
+# ── Prefer Kali's libaio1t64 so metasploit's Oracle dep resolves ─────────────
+# metasploit-framework Depends oracle-instantclient-basic, which in turn Depends
+# libaio1t64 (>= 0.3.113-8+kali1). trixie ships 0.3.113-8+b1 — the SAME upstream
+# (0.3.113), just an older packaging revision — so the Kali build is ABI-safe to
+# use everywhere and satisfies both oracle and every base package (they depend on
+# libaio1t64 with >= constraints). Priority 600 (> trixie's 500) makes apt pick
+# the Kali build system-wide, resolving the version conflict without dropping
+# metasploit.
+Package: libaio1t64
+Pin: release o=Kali
+Pin-Priority: 600
 
 # ── Block all games permanently ───────────────────────────────────────────────
 Package: gnome-games kde-games supertux supertuxkart openarena tuxracer
