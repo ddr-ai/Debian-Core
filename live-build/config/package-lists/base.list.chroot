@@ -60,7 +60,6 @@ pipewire-pulse
 pipewire-audio
 wireplumber
 xwayland
-plasma-workspace-wayland
 wayland-protocols
 xorg
 openbox
