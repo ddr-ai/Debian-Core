@@ -28,8 +28,9 @@ interface Release {
   assets: ReleaseAsset[];
 }
 
-// Replace with your actual GitHub org/repo once the repo is public
-const GITHUB_REPO = 'dainraku-os/dainraku';
+// Driven by the VITE_GITHUB_REPO build-time env var (e.g. "myorg/myrepo").
+// Falls back to the upstream repo so development works without a .env file.
+const GITHUB_REPO = import.meta.env.VITE_GITHUB_REPO ?? 'dainraku-os/dainraku';
 const RELEASES_API = `https://api.github.com/repos/${GITHUB_REPO}/releases`;
 
 function formatBytes(bytes: number): string {
