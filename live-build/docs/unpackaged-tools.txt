@@ -1,5 +1,5 @@
 # DainRaku OS — tools not packaged in Debian bookworm or Kali apt
-# Removed from package lists (build v0.0.4-test failures).
+# Removed from live-build package lists (build v0.0.4-test failures).
 # Install manually post-install (pipx / GitHub releases) or add via hooks later.
 
 apt-btrfs-snapshot
