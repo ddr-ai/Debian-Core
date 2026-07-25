@@ -1,5 +1,6 @@
 # DainRaku OS — Liquorix kernel repository
-# Placed in config/archives/ so live-build imports it during the chroot_archives
-# stage, BEFORE package installation. This ensures the Liquorix kernel packages
-# can be resolved when processing the base package list.
-deb [signed-by=/usr/share/keyrings/liquorix-keyring.gpg] https://liquorix.net/debian stable main
+# The signing key ships alongside this file as liquorix.key.chroot, which
+# live-build installs into the chroot's trusted keyrings BEFORE it runs apt
+# update in the bootstrap/archives stage. This lets Liquorix kernel packages
+# resolve when processing the base package list.
+deb https://liquorix.net/debian stable main

@@ -137,7 +137,7 @@ jobs:
             -w /build \
             debian:bookworm \
             bash -c '
-              set -e
+              set -eo pipefail
               export DEBIAN_FRONTEND=noninteractive
               apt-get update -q
               apt-get install -y --no-install-recommends \

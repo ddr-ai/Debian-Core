@@ -1,0 +1,54 @@
+I'll retrieve the logs for this failing job to identify the issue and provide a solution.
+
+Now let me get the workflow file to see the full context:
+Solution for Failing Job
+
+The job is failing because the lb config command in the live-build/auto/config script is receiving unrecognized options:
+Code
+
+lb config: unrecognized option '--include=ca-certificates,curl,apt-transport-https,gnupg'
+lb config: unrecognized option '--image-name'
+lb config: unrecognized option '--updates'
+lb config: unrecognized option '--uefi-secure-boot'
+
+Root Cause
+
+The auto/config script in your live-build directory is passing options to lb config that are either:
+
+    Invalid for your version of live-build (options may have changed between versions)
+    Using incorrect syntax (e.g., --include should be a different format)
+    Not supported by the installed live-build version
+
+Fix
+
+You need to update your live-build/auto/config script to use valid lb config options. Here's how to proceed:
+
+    Check your live-build version and documentation:
+    bash
+
+    lb config --help
+
+    Replace the problematic options. Based on live-build conventions, the corrected auto/config should look something like:
+    bash
+
+    #!/bin/bash
+    set -e
+
+    lb config \
+      --architectures amd64 \
+      --distribution bookworm \
+      --archive-areas "main contrib non-free non-free-firmware" \
+      --debootstrap-options "--variant=minbase" \
+      --apt-indices false \
+      --apt-recommends false
+      # Remove or fix these unsupported options:
+      # --include=ca-certificates,curl,apt-transport-https,gnupg
+      # --image-name
+      # --updates
+      # --uefi-secure-boot
+
+    For package inclusion, use the proper method via config/package-lists/ files instead of --include flag.
+
+    For UEFI/Secure Boot support, check if there's a --uefi option (without -secure-boot) or configure it differently.
+
+Please share your live-build/auto/config file so I can provide the exact corrected version with proper syntax for your specific use case.
