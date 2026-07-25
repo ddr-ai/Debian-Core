@@ -1,0 +1,11 @@
+[Theme]
+name=breeze-dark
+
+[Wallpaper]
+defaultWallpaperTheme=DainRaku
+defaultFileSuffix=.jpg
+defaultWidth=1024
+defaultHeight=1024
+
+[Wallpapers]
+usersWallpapers=/usr/share/wallpapers/DainRaku

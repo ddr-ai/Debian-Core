@@ -1,0 +1,14 @@
+{
+    "KPlugin": {
+        "Authors": [
+            {
+                "Email": "team@dainraku.org",
+                "Name": "DainRaku OS Team"
+            }
+        ],
+        "Id": "DainRaku",
+        "License": "CC-BY-SA-4.0",
+        "Name": "DainRaku",
+        "Description": "Default DainRaku OS dark cyberpunk wallpaper"
+    }
+}

@@ -1,0 +1,16 @@
+{
+    "KPackageStructure": "Plasma/LookAndFeel",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Email": "team@dainraku.org",
+                "Name": "DainRaku OS Team"
+            }
+        ],
+        "Id": "org.dainraku.desktop",
+        "License": "GPL-3.0+",
+        "Name": "DainRaku",
+        "Description": "DainRaku OS look and feel — dark cyberpunk branding"
+    },
+    "X-Plasma-APIVersion": "2"
+}
