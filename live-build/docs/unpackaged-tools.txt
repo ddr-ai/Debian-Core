@@ -101,3 +101,4 @@ theharvester
 kismet
 evil-winrm
 wpscan
+urlcrazy
