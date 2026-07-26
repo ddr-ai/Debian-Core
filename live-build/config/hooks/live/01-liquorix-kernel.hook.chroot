@@ -5,10 +5,12 @@ set -euo pipefail
 
 echo "[DainRaku] Installing Liquorix Kernel..."
 
-# Add Liquorix APT key and repository
-curl -s 'https://liquorix.net/add-liquorix-repo.sh' | bash
-
-# Install Liquorix kernel
+# The Liquorix repository and signing key are already configured for the build
+# via config/archives/liquorix.{list,key,pref}.chroot, so we install the kernel
+# directly. We deliberately do NOT run liquorix.net/add-liquorix-repo.sh: it
+# inspects /etc/os-release and aborts on our custom ID ("dainraku") with
+# "This distribution is not supported".
+apt-get update
 apt-get install -y linux-image-liquorix-amd64 linux-headers-liquorix-amd64
 
 # Set Liquorix as the default GRUB entry
